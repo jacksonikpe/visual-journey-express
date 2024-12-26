@@ -171,7 +171,7 @@ const Portfolio = () => {
                     </div>
                   </motion.div>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[725px]">
+                <DialogContent className="sm:max-w-[725px] max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle className="text-2xl font-bold text-primary mb-2">{project.title}</DialogTitle>
                     <DialogDescription className="text-muted-foreground font-medium">
