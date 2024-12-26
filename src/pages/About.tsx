@@ -1,0 +1,45 @@
+import { motion } from "framer-motion";
+
+const About = () => {
+  return (
+    <div className="min-h-screen pt-20 bg-background">
+      <div className="container mx-auto px-4 py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-4xl mx-auto"
+        >
+          <h1 className="text-4xl md:text-5xl font-bold mb-8 text-primary">Our Story</h1>
+          <div className="prose prose-invert max-w-none">
+            <p className="text-lg text-muted-foreground mb-6">
+              With over a decade of experience in visual storytelling, we've dedicated ourselves to capturing life's most precious moments and transforming them into timeless pieces of art.
+            </p>
+            
+            <h2 className="text-2xl font-bold mb-4 text-foreground">Our Mission</h2>
+            <p className="text-lg text-muted-foreground mb-8">
+              We believe in the power of visual storytelling to move, inspire, and connect people. Our mission is to create compelling visual narratives that resonate with audiences and leave lasting impressions.
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-8 my-12">
+              <div className="bg-secondary p-6 rounded-lg">
+                <h3 className="text-xl font-bold mb-3 text-primary">Vision</h3>
+                <p className="text-muted-foreground">
+                  To be the leading creative force in visual storytelling, pushing boundaries and setting new standards in videography and photography.
+                </p>
+              </div>
+              <div className="bg-secondary p-6 rounded-lg">
+                <h3 className="text-xl font-bold mb-3 text-primary">Values</h3>
+                <p className="text-muted-foreground">
+                  Creativity, authenticity, and excellence guide everything we do, ensuring each project receives our undivided attention and expertise.
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+export default About;
