@@ -19,37 +19,56 @@ const Contact = () => {
           transition={{ duration: 0.5 }}
           className="max-w-4xl mx-auto"
         >
-          <h1 className="text-4xl md:text-5xl font-bold mb-8 text-primary">Get in Touch</h1>
-          
+          <h1 className="text-4xl md:text-5xl font-bold mb-8 text-primary">
+            Get in Touch
+          </h1>
+
           <div className="grid md:grid-cols-2 gap-12">
             {/* Contact Information */}
             <div>
-              <h2 className="text-2xl font-semibold mb-6">Contact Information</h2>
+              <h2 className="text-2xl font-semibold mb-6">
+                Contact Information
+              </h2>
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <Mail className="text-primary" />
-                  <span className="text-muted-foreground">hello@lens.com</span>
+                  <span className="text-muted-foreground">
+                    info@s2visualproduction.com
+                  </span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Phone className="text-primary" />
-                  <span className="text-muted-foreground">+1 (555) 123-4567</span>
+                  <span className="text-muted-foreground">
+                    +61 (433) 998 274
+                  </span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <MapPin className="text-primary" />
-                  <span className="text-muted-foreground">Los Angeles, CA</span>
+                  <span className="text-muted-foreground">
+                    Sydney, Australia
+                  </span>
                 </div>
               </div>
 
               <div className="mt-8">
                 <h3 className="text-xl font-semibold mb-4">Follow Us</h3>
                 <div className="flex space-x-4">
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                  <a
+                    href="#"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
                     <Instagram size={24} />
                   </a>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                  <a
+                    href="#"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
                     <Twitter size={24} />
                   </a>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                  <a
+                    href="#"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
                     <Youtube size={24} />
                   </a>
                 </div>
@@ -60,7 +79,10 @@ const Contact = () => {
             <div>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium mb-2">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium mb-2"
+                  >
                     Name
                   </label>
                   <input
@@ -71,7 +93,10 @@ const Contact = () => {
                   />
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium mb-2">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium mb-2"
+                  >
                     Email
                   </label>
                   <input
@@ -82,7 +107,10 @@ const Contact = () => {
                   />
                 </div>
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium mb-2">
+                  <label
+                    htmlFor="message"
+                    className="block text-sm font-medium mb-2"
+                  >
                     Message
                   </label>
                   <textarea
