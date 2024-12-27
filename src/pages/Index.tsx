@@ -32,9 +32,9 @@ const Index = () => {
           <img
             src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2071&auto=format&fit=crop"
             alt="Hero background"
-            className="object-cover w-full h-full opacity-30"
+            className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-background/90 backdrop-blur-sm"></div>
+          <div className="absolute inset-0 bg-black/50"></div>
         </div>
         
         <div className="container mx-auto px-4 z-10">
@@ -67,11 +67,21 @@ const Index = () => {
       </section>
 
       {/* Services Preview */}
-      <section className="relative py-20 bg-secondary overflow-hidden">
+      <section className="relative py-20 overflow-hidden">
         {/* Animated background */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(212,175,55,0.1),transparent_50%)] animate-[pulse_4s_ease-in-out_infinite]"></div>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(212,175,55,0.15),transparent_50%)] animate-[pulse_6s_ease-in-out_infinite]"></div>
+        <div className="absolute inset-0">
+          <div 
+            className="absolute inset-0 bg-secondary"
+            style={{
+              background: `
+                radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.15) 0%, transparent 50%)
+              `
+            }}
+          >
+            <div className="absolute inset-0 animate-pulse duration-[4s]"></div>
+            <div className="absolute inset-0 animate-pulse duration-[6s] delay-[2s]"></div>
+          </div>
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
