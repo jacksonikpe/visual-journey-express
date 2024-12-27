@@ -33,8 +33,7 @@ const AnimatedBackground = () => {
 
     // Animation loop
     const animate = () => {
-      // Use a semi-transparent background to create trailing effect
-      ctx.fillStyle = "rgba(10, 15, 28, 0.1)";
+      ctx.fillStyle = "#0A0F1C";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       shapes.forEach((shape) => {
@@ -42,8 +41,7 @@ const AnimatedBackground = () => {
         ctx.translate(shape.x, shape.y);
         ctx.rotate(shape.rotation);
         ctx.fillStyle = shape.color;
-        // Increase opacity to make shapes more visible
-        ctx.globalAlpha = 0.4;
+        ctx.globalAlpha = 0.1;
 
         if (shape.shape === "circle") {
           ctx.beginPath();
@@ -84,10 +82,7 @@ const AnimatedBackground = () => {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 w-full h-full"
-      style={{ 
-        filter: "blur(1px)",
-        zIndex: 0,  // Ensure it's behind content but visible
-      }}
+      style={{ filter: "blur(2px)" }}
     />
   );
 };
