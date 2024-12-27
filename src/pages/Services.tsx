@@ -36,20 +36,22 @@ const Services = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
+          className="relative"
         >
-          <h1 className="text-4xl md:text-5xl font-bold mb-8 text-primary">Our Services</h1>
-          <div className="relative">
-            <div className="absolute inset-0 -mx-4">
-              <AnimatedBackground />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+          <div className="absolute inset-0 -mx-4 overflow-hidden">
+            <AnimatedBackground />
+          </div>
+          
+          <div className="relative z-10">
+            <h1 className="text-4xl md:text-5xl font-bold mb-8 text-primary">Our Services</h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {services.map((service, index) => (
                 <motion.div
                   key={service.title}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-secondary/80 backdrop-blur-sm p-6 rounded-lg hover:bg-secondary/60 transition-colors relative z-10"
+                  className="bg-secondary/80 backdrop-blur-sm p-6 rounded-lg hover:bg-secondary/60 transition-colors"
                 >
                   <service.icon className="w-12 h-12 text-primary mb-4" />
                   <h2 className="text-xl font-bold mb-3">{service.title}</h2>
