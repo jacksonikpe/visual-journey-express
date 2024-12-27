@@ -128,7 +128,7 @@ const Portfolio = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      <div className="flex-grow container mx-auto px-4 py-16">
+      <div className="flex-grow container mx-auto px-4 pt-24 pb-16">
         <motion.div
           initial="hidden"
           animate="visible"

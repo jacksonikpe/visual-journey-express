@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Play } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import AnimatedBackground from "../components/AnimatedBackground";
 
 const Index = () => {
   useEffect(() => {
@@ -27,8 +28,10 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Add top spacing for all content */}
+      <div className="pt-24">
+        {/* Hero Section */}
+        <section className="relative min-h-[calc(100vh-6rem)] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
             src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2071&auto=format&fit=crop"
@@ -65,30 +68,20 @@ const Index = () => {
             </div>
           </div>
         </div>
-      </section>
+        </section>
 
-      {/* Services Preview */}
-      <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-secondary animate-pulse">
-            <div 
-              className="absolute inset-0"
-              style={{
-                background: `
-                  radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
-                  radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.15) 0%, transparent 50%)
-                `
-              }}
-            />
+        {/* Services Preview */}
+        <section className="relative py-20 overflow-hidden">
+          <div className="absolute inset-0">
+            <AnimatedBackground />
           </div>
-        </div>
 
-        <div className="container mx-auto px-4 relative z-10">
-          <h2 className="section-title text-center animate-on-scroll">
-            Our <span className="text-primary">Services</span>
-          </h2>
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service, index) => (
+          <div className="container mx-auto px-4 relative z-10">
+            <h2 className="section-title text-center animate-on-scroll">
+              Our <span className="text-primary">Services</span>
+            </h2>
+            <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {services.map((service, index) => (
               <div
                 key={service.title}
                 className="group p-6 bg-card/80 backdrop-blur-sm rounded-lg card-hover animate-on-scroll"
@@ -100,13 +93,13 @@ const Index = () => {
                 <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
                 <p className="text-muted-foreground">{service.description}</p>
               </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Featured Work */}
-      <section className="py-20">
+        {/* Featured Work */}
+        <section className="py-20">
         <div className="container mx-auto px-4">
           <h2 className="section-title text-center animate-on-scroll">
             Featured <span className="text-primary">Work</span>
@@ -133,7 +126,8 @@ const Index = () => {
             ))}
           </div>
         </div>
-      </section>
+        </section>
+      </div>
       
       <Footer />
     </div>
