@@ -29,16 +29,12 @@ const Index = () => {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
+          <img
+            src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2071&auto=format&fit=crop"
+            alt="Hero background"
             className="object-cover w-full h-full opacity-30"
-          >
-            <source src="https://assets.mixkit.co/videos/preview/mixkit-set-of-plateaus-seen-from-the-heights-in-a-sunset-26070-large.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-background/60 backdrop-blur-sm"></div>
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-background/90 backdrop-blur-sm"></div>
         </div>
         
         <div className="container mx-auto px-4 z-10">
@@ -71,8 +67,14 @@ const Index = () => {
       </section>
 
       {/* Services Preview */}
-      <section className="py-20 bg-secondary">
-        <div className="container mx-auto px-4">
+      <section className="relative py-20 bg-secondary overflow-hidden">
+        {/* Animated background */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(212,175,55,0.1),transparent_50%)] animate-[pulse_4s_ease-in-out_infinite]"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(212,175,55,0.15),transparent_50%)] animate-[pulse_6s_ease-in-out_infinite]"></div>
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
           <h2 className="section-title text-center animate-on-scroll">
             Our <span className="text-primary">Services</span>
           </h2>
@@ -80,10 +82,10 @@ const Index = () => {
             {services.map((service, index) => (
               <div
                 key={service.title}
-                className="group p-6 bg-card rounded-lg card-hover animate-on-scroll"
+                className="group p-6 bg-card/80 backdrop-blur-sm rounded-lg card-hover animate-on-scroll"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <service.icon className="text-primary" size={24} />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
