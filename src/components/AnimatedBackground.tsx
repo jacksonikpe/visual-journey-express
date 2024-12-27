@@ -48,7 +48,12 @@ const AnimatedBackground = () => {
           ctx.arc(0, 0, shape.size / 2, 0, Math.PI * 2);
           ctx.fill();
         } else {
-          ctx.fillRect(-shape.size / 2, -shape.size / 2, shape.size, shape.size);
+          ctx.fillRect(
+            -shape.size / 2,
+            -shape.size / 2,
+            shape.size,
+            shape.size
+          );
         }
 
         ctx.restore();

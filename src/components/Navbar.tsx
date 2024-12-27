@@ -35,7 +35,7 @@ const Navbar = () => {
             to="/"
             className="text-2xl font-bold text-primary hover:text-primary/90 transition-colors"
           >
-            LENS
+            LOGO
           </Link>
 
           {/* Desktop Navigation */}
