@@ -1,9 +1,12 @@
 import { motion } from "framer-motion";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const About = () => {
   return (
-    <div className="min-h-screen pt-20 bg-background">
-      <div className="container mx-auto px-4 py-16">
+    <div className="min-h-screen flex flex-col bg-background">
+      <Navbar />
+      <div className="flex-grow container mx-auto px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -38,6 +41,7 @@ const About = () => {
           </div>
         </motion.div>
       </div>
+      <Footer />
     </div>
   );
 };

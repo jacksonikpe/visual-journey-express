@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import { Camera, Film, Video, Clapperboard } from "lucide-react";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const Services = () => {
   const services = [
@@ -26,8 +28,9 @@ const Services = () => {
   ];
 
   return (
-    <div className="min-h-screen pt-20 bg-background">
-      <div className="container mx-auto px-4 py-16">
+    <div className="min-h-screen flex flex-col bg-background">
+      <Navbar />
+      <div className="flex-grow container mx-auto px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -41,7 +44,7 @@ const Services = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-secondary p-6 rounded-lg hover:bg-secondary/80 transition-colors"
+                className="bg-secondary/80 backdrop-blur-sm p-6 rounded-lg hover:bg-secondary/60 transition-colors relative z-10"
               >
                 <service.icon className="w-12 h-12 text-primary mb-4" />
                 <h2 className="text-xl font-bold mb-3">{service.title}</h2>
@@ -51,6 +54,7 @@ const Services = () => {
           </div>
         </motion.div>
       </div>
+      <Footer />
     </div>
   );
 };

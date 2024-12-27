@@ -68,19 +68,17 @@ const Index = () => {
 
       {/* Services Preview */}
       <section className="relative py-20 overflow-hidden">
-        {/* Animated background */}
         <div className="absolute inset-0">
-          <div 
-            className="absolute inset-0 bg-secondary"
-            style={{
-              background: `
-                radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.15) 0%, transparent 50%)
-              `
-            }}
-          >
-            <div className="absolute inset-0 animate-pulse duration-[4s]"></div>
-            <div className="absolute inset-0 animate-pulse duration-[6s] delay-[2s]"></div>
+          <div className="absolute inset-0 bg-secondary animate-pulse">
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: `
+                  radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.15) 0%, transparent 50%)
+                `
+              }}
+            />
           </div>
         </div>
 
@@ -135,6 +133,8 @@ const Index = () => {
           </div>
         </div>
       </section>
+      
+      <Footer />
     </div>
   );
 };

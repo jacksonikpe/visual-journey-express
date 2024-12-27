@@ -1,4 +1,6 @@
 import { motion } from "framer-motion";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import {
   Dialog,
   DialogContent,
@@ -124,8 +126,9 @@ const Portfolio = () => {
   };
 
   return (
-    <div className="min-h-screen pt-20 bg-background">
-      <div className="container mx-auto px-4 py-16">
+    <div className="min-h-screen flex flex-col bg-background">
+      <Navbar />
+      <div className="flex-grow container mx-auto px-4 py-16">
         <motion.div
           initial="hidden"
           animate="visible"
@@ -218,6 +221,7 @@ const Portfolio = () => {
           </motion.div>
         </motion.div>
       </div>
+      <Footer />
     </div>
   );
 };

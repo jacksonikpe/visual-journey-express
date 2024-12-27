@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, Instagram, Twitter, Youtube } from "lucide-react";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const Contact = () => {
   const handleSubmit = (e: React.FormEvent) => {
@@ -8,8 +10,9 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen pt-20 bg-background">
-      <div className="container mx-auto px-4 py-16">
+    <div className="min-h-screen flex flex-col bg-background">
+      <Navbar />
+      <div className="flex-grow container mx-auto px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -100,6 +103,7 @@ const Contact = () => {
           </div>
         </motion.div>
       </div>
+      <Footer />
     </div>
   );
 };
