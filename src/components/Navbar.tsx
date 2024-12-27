@@ -35,7 +35,7 @@ const Navbar = () => {
             to="/"
             className="text-2xl font-bold text-primary hover:text-primary/90 transition-colors"
           >
-            LOGO
+            S2 Visual Production LOGO
           </Link>
 
           {/* Desktop Navigation */}
