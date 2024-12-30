@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Camera, Film, Video, Clapperboard } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import AnimatedBackground from "../components/AnimatedBackground";
 
 const Services = () => {
   const services = [
@@ -38,19 +39,7 @@ const Services = () => {
           className="relative"
         >
           <div className="absolute inset-0 -mx-4 overflow-hidden">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-cover opacity-30"
-            >
-              <source
-                src="https://assets.mixkit.co/videos/preview/mixkit-set-of-plateaus-seen-from-the-heights-in-a-sunset-26070-large.mp4"
-                type="video/mp4"
-              />
-              Your browser does not support the video tag.
-            </video>
+            <AnimatedBackground />
           </div>
           
           <div className="relative z-10">
