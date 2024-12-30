@@ -7,10 +7,14 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
           <div>
-            <Link to="/" className="text-2xl font-bold text-primary">
-              S2 Visual Productions
+            <Link to="/" className="block hover:opacity-90 transition-opacity">
+              <img 
+                src="/lovable-uploads/86030fa8-6840-48b2-936a-a81ff4e1b108.png" 
+                alt="S2 Visual Production Logo" 
+                className="h-12 w-auto mb-4"
+              />
             </Link>
-            <p className="text-muted-foreground mt-2">
+            <p className="text-muted-foreground">
               Your Story, Our Lens, Infinite Possibilities
             </p>
           </div>

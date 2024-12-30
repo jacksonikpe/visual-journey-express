@@ -33,9 +33,13 @@ const Navbar = () => {
         <div className="flex items-center justify-between">
           <Link
             to="/"
-            className="text-2xl font-bold text-primary hover:text-primary/90 transition-colors"
+            className="hover:opacity-90 transition-opacity"
           >
-            S2 Visual Production LOGO
+            <img 
+              src="/lovable-uploads/86030fa8-6840-48b2-936a-a81ff4e1b108.png" 
+              alt="S2 Visual Production Logo" 
+              className="h-12 w-auto"
+            />
           </Link>
 
           {/* Desktop Navigation */}
