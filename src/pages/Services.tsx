@@ -46,7 +46,7 @@ const Services = () => {
               className="w-full h-full object-cover opacity-30"
             >
               <source
-                src="https://player.vimeo.com/external/459389137.sd.mp4?s=2b3f1c2e57d2d3f20949b0e7dd0eafb042e9cc5c&profile_id=164&oauth2_token_id=57447761"
+                src="https://assets.mixkit.co/videos/preview/mixkit-set-of-plateaus-seen-from-the-heights-in-a-sunset-26070-large.mp4"
                 type="video/mp4"
               />
               Your browser does not support the video tag.
