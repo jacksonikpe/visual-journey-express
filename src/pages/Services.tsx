@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { Camera, Film, Video, Clapperboard } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import AnimatedBackground from "../components/AnimatedBackground";
 
 const Services = () => {
   const services = [
@@ -39,7 +38,19 @@ const Services = () => {
           className="relative"
         >
           <div className="absolute inset-0 -mx-4 overflow-hidden">
-            <AnimatedBackground />
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover opacity-30"
+            >
+              <source
+                src="https://player.vimeo.com/external/459389137.sd.mp4?s=2b3f1c2e57d2d3f20949b0e7dd0eafb042e9cc5c&profile_id=164&oauth2_token_id=57447761"
+                type="video/mp4"
+              />
+              Your browser does not support the video tag.
+            </video>
           </div>
           
           <div className="relative z-10">
