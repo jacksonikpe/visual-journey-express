@@ -1,4 +1,4 @@
-import { Mail, Instagram, Facebook, Youtube } from "lucide-react";
+import { Instagram, Facebook, Youtube, Tiktok } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -22,32 +22,40 @@ const Footer = () => {
           <div className="flex flex-col items-center md:items-end space-y-4">
             <div className="flex space-x-6">
               <a
-                href="mailto:hello@s2visualproductions.com"
-                className="text-muted-foreground hover:text-primary transition-colors"
-                aria-label="Email us"
-              >
-                <Mail size={24} />
-              </a>
-              <a
-                href="#"
+                href="https://www.instagram.com/s2visualproductions/profilecard/?igsh=MXBvZnoyeHR3N3hkbw=="
                 className="text-muted-foreground hover:text-primary transition-colors"
                 aria-label="Follow us on Instagram"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <Instagram size={24} />
               </a>
               <a
-                href="#"
+                href="https://www.facebook.com/share/15TN46X83N/?mibextid=wwXIfr"
                 className="text-muted-foreground hover:text-primary transition-colors"
                 aria-label="Follow us on Facebook"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <Facebook size={24} />
               </a>
               <a
-                href="#"
+                href="https://youtube.com/@s2visualproduction?si=GxOu1ExFTWvtVahn"
                 className="text-muted-foreground hover:text-primary transition-colors"
                 aria-label="Subscribe to our YouTube"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <Youtube size={24} />
+              </a>
+              <a
+                href="https://www.tiktok.com/@s2.visual.productions?_t=8sgqAd0Xyle&_r=1"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="Follow us on TikTok"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Tiktok size={24} />
               </a>
             </div>
             <p className="text-sm text-muted-foreground">
