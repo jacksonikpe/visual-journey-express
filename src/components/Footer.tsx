@@ -1,4 +1,4 @@
-import { Instagram, Facebook, Youtube, Tiktok } from "lucide-react";
+import { Instagram, Facebook, Youtube } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -50,12 +50,12 @@ const Footer = () => {
               </a>
               <a
                 href="https://www.tiktok.com/@s2.visual.productions?_t=8sgqAd0Xyle&_r=1"
-                className="text-muted-foreground hover:text-primary transition-colors"
+                className="text-muted-foreground hover:text-primary transition-colors font-medium"
                 aria-label="Follow us on TikTok"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Tiktok size={24} />
+                TikTok
               </a>
             </div>
             <p className="text-sm text-muted-foreground">
