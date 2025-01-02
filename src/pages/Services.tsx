@@ -34,7 +34,7 @@ const Services = () => {
       icon: Briefcase,
       title: "Freelancing Services",
       description:
-        "Offering flexible and tailored freelance solutions across various domains, including consulting, creative projects, and technical expertise.",
+        "Freelance photography and videography tailored for events, branding, and storytelling with a creative edge.",
     },
   ];
 
