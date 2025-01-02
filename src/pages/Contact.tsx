@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Instagram, Twitter, Youtube } from "lucide-react";
+import { Mail, Phone, MapPin, Instagram, Facebook, Youtube } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useForm } from "react-hook-form";
@@ -95,22 +95,36 @@ const Contact = () => {
                 <h3 className="text-xl font-semibold mb-4">Follow Us</h3>
                 <div className="flex space-x-4">
                   <a
-                    href="#"
+                    href="https://www.instagram.com/s2visualproductions/profilecard/?igsh=MXBvZnoyeHR3N3hkbw=="
                     className="text-muted-foreground hover:text-primary transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     <Instagram size={24} />
                   </a>
                   <a
-                    href="#"
+                    href="https://www.facebook.com/share/15TN46X83N/?mibextid=wwXIfr"
                     className="text-muted-foreground hover:text-primary transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    <Twitter size={24} />
+                    <Facebook size={24} />
                   </a>
                   <a
-                    href="#"
+                    href="https://youtube.com/@s2visualproduction?si=GxOu1ExFTWvtVahn"
                     className="text-muted-foreground hover:text-primary transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     <Youtube size={24} />
+                  </a>
+                  <a
+                    href="https://www.tiktok.com/@s2.visual.productions?_t=8sgqAd0Xyle&_r=1"
+                    className="text-muted-foreground hover:text-primary transition-colors font-medium"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    TikTok
                   </a>
                 </div>
               </div>
