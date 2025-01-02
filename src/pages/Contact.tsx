@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Instagram, Twitter, Youtube } from "lucide-react";
+import { Mail, Phone, MapPin, Instagram, Facebook, Youtube } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -19,7 +19,7 @@ const Contact = () => {
           transition={{ duration: 0.5 }}
           className="max-w-4xl mx-auto"
         >
-          <h1 className="text-4xl md:text-5xl font-bold mb-8 text-primary">
+          <h1 className="text-4xl md:text-5xl font-bold mb-8 text-[#364354]">
             Get in Touch
           </h1>
 
@@ -31,19 +31,19 @@ const Contact = () => {
               </h2>
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
-                  <Mail className="text-primary" />
+                  <Mail className="text-[#364354]" />
                   <span className="text-muted-foreground">
                     info@s2visualproduction.com
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Phone className="text-primary" />
+                  <Phone className="text-[#364354]" />
                   <span className="text-muted-foreground">
                     +61 (433) 998 274
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <MapPin className="text-primary" />
+                  <MapPin className="text-[#364354]" />
                   <span className="text-muted-foreground">
                     Sydney, Australia
                   </span>
@@ -54,22 +54,36 @@ const Contact = () => {
                 <h3 className="text-xl font-semibold mb-4">Follow Us</h3>
                 <div className="flex space-x-4">
                   <a
-                    href="#"
-                    className="text-muted-foreground hover:text-primary transition-colors"
+                    href="https://www.instagram.com/s2visualproductions/profilecard/?igsh=MXBvZnoyeHR3N3hkbw=="
+                    className="text-muted-foreground hover:text-[#364354] transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     <Instagram size={24} />
                   </a>
                   <a
-                    href="#"
-                    className="text-muted-foreground hover:text-primary transition-colors"
+                    href="https://www.facebook.com/share/15TN46X83N/?mibextid=wwXIfr"
+                    className="text-muted-foreground hover:text-[#364354] transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    <Twitter size={24} />
+                    <Facebook size={24} />
                   </a>
                   <a
-                    href="#"
-                    className="text-muted-foreground hover:text-primary transition-colors"
+                    href="https://youtube.com/@s2visualproduction?si=GxOu1ExFTWvtVahn"
+                    className="text-muted-foreground hover:text-[#364354] transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     <Youtube size={24} />
+                  </a>
+                  <a
+                    href="https://www.tiktok.com/@s2.visual.productions?_t=8sgqAd0Xyle&_r=1"
+                    className="text-muted-foreground hover:text-[#364354] transition-colors font-medium"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    TikTok
                   </a>
                 </div>
               </div>
@@ -88,7 +102,7 @@ const Contact = () => {
                   <input
                     type="text"
                     id="name"
-                    className="w-full px-4 py-2 bg-secondary border border-secondary rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-4 py-2 bg-secondary border border-secondary rounded-md focus:outline-none focus:ring-2 focus:ring-[#364354]"
                     required
                   />
                 </div>
@@ -102,7 +116,7 @@ const Contact = () => {
                   <input
                     type="email"
                     id="email"
-                    className="w-full px-4 py-2 bg-secondary border border-secondary rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-4 py-2 bg-secondary border border-secondary rounded-md focus:outline-none focus:ring-2 focus:ring-[#364354]"
                     required
                   />
                 </div>
@@ -116,13 +130,13 @@ const Contact = () => {
                   <textarea
                     id="message"
                     rows={4}
-                    className="w-full px-4 py-2 bg-secondary border border-secondary rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-4 py-2 bg-secondary border border-secondary rounded-md focus:outline-none focus:ring-2 focus:ring-[#364354]"
                     required
                   ></textarea>
                 </div>
                 <button
                   type="submit"
-                  className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                  className="w-full px-6 py-3 bg-[#364354] text-white rounded-md hover:bg-[#364354]/90 transition-colors"
                 >
                   Send Message
                 </button>
