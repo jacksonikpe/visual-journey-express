@@ -9,7 +9,7 @@ const About = () => {
       <div 
         className="flex-grow container mx-auto px-4 pt-24 pb-16 relative"
         style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop')",
+          backgroundImage: "url('/lovable-uploads/8c9f3e66-6d8a-465b-a1fd-ce08f169586e.png')",
           backgroundSize: "cover",
           backgroundPosition: "center"
         }}
