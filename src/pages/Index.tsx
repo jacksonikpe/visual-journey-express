@@ -68,7 +68,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Recent Work Section */}
+      {/* Recent Work Section */}
         <section className="py-20 relative overflow-hidden">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Recent Work</h2>
@@ -95,21 +95,34 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Call to Action Section */}
-        <section className="py-20 bg-secondary">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Are You Ready to Tell an Untold Story?</h2>
-            <p className="text-xl text-muted-foreground mb-8">Sound, Lights, Camera, Action.<br />Let us transform your imagination into an unforgettable reality.</p>
-            <Link
-              to="/contact"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors"
-            >
-              REACH OUT
-              <ArrowRight />
-            </Link>
-          </div>
-        </section>
-      </div>
+      {/* Call to Action Section */}
+      <section className="relative py-20">
+        <div className="absolute inset-0 z-0">
+          <img
+            src="/lovable-uploads/94ceb6c1-e80a-4546-a589-67faa27e5d72.png"
+            alt="Mountain landscape"
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-black/50"></div>
+        </div>
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
+            Are You Ready to Tell an Untold Story?
+          </h2>
+          <p className="text-xl text-white/90 mb-8">
+            Sound, Lights, Camera, Action.<br />
+            Let us transform your imagination into an unforgettable reality.
+          </p>
+          <Link
+            to="/contact"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors"
+          >
+            REACH OUT
+            <ArrowRight />
+          </Link>
+        </div>
+      </section>
       
       <Footer />
     </div>
