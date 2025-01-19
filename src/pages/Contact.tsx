@@ -3,99 +3,109 @@ import { Mail, Phone, MapPin, Instagram, Facebook, Youtube } from "lucide-react"
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import emailjs from '@emailjs/browser';
-import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "../hooks/use-toast";
 
-interface ContactFormData {
-  name: string;
-  email: string;
-  message: string;
-}
+const contactFormSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  message: z.string().min(1, "Message is required"),
+});
+
+type ContactFormData = z.infer<typeof contactFormSchema>;
 
 const Contact = () => {
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<ContactFormData>();
   const { toast } = useToast();
+  const form = useForm<ContactFormData>({
+    resolver: zodResolver(contactFormSchema),
+  });
 
   const onSubmit = async (data: ContactFormData) => {
     try {
-      const templateParams = {
-        from_name: data.name,
-        from_email: data.email,
-        message: data.message,
-        to_email: 'info@s2visualproduction.com'
-      };
-
-      await emailjs.send(
-        'YOUR_SERVICE_ID', // You'll need to replace this
-        'YOUR_TEMPLATE_ID', // You'll need to replace this
-        templateParams,
-        'YOUR_PUBLIC_KEY' // You'll need to replace this
-      );
-
-      toast({
-        title: "Message sent successfully!",
-        description: "We'll get back to you as soon as possible.",
-      });
-
-      reset();
+      await emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", data, "YOUR_USER_ID");
+      toast({ title: "Message sent!", description: "We will get back to you soon." });
+      form.reset();
     } catch (error) {
-      toast({
-        title: "Error sending message",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to send message. Please try again." });
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="flex-grow container mx-auto px-4 pt-24 pb-16">
+      <div className="container mx-auto px-4 py-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="max-w-4xl mx-auto"
         >
-          <h1 className="text-4xl md:text-5xl font-bold mb-8 text-primary">
+          <h1 className="text-4xl md:text-5xl font-bold text-center mb-12">
             Get in Touch
           </h1>
 
           <div className="grid md:grid-cols-2 gap-12">
+            {/* Contact Form */}
+            <div className="bg-card p-6 rounded-lg shadow-lg">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium">Name</label>
+                  <input
+                    {...form.register("name")}
+                    className="mt-1 block w-full border border-muted-foreground rounded-md p-2"
+                  />
+                  {form.formState.errors.name && <p className="text-red-500">{form.formState.errors.name.message}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium">Email</label>
+                  <input
+                    {...form.register("email")}
+                    className="mt-1 block w-full border border-muted-foreground rounded-md p-2"
+                  />
+                  {form.formState.errors.email && <p className="text-red-500">{form.formState.errors.email.message}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium">Message</label>
+                  <textarea
+                    {...form.register("message")}
+                    className="mt-1 block w-full border border-muted-foreground rounded-md p-2"
+                    rows={4}
+                  />
+                  {form.formState.errors.message && <p className="text-red-500">{form.formState.errors.message.message}</p>}
+                </div>
+                <button type="submit" className="w-full bg-primary text-primary-foreground rounded-md p-2">
+                  Send Message
+                </button>
+              </form>
+            </div>
+
             {/* Contact Information */}
-            <div>
-              <h2 className="text-2xl font-semibold mb-6">
-                Contact Information
-              </h2>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <Mail className="text-primary" />
-                  <span className="text-muted-foreground">
-                    info@s2visualproduction.com
-                  </span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Phone className="text-primary" />
-                  <span className="text-muted-foreground">
-                    +61 (433) 998 274
-                  </span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <MapPin className="text-primary" />
-                  <span className="text-muted-foreground">
-                    Sydney, Australia
-                  </span>
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-xl font-semibold mb-4">Contact Information</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-3">
+                    <Mail className="text-primary" />
+                    <span>info@s2visualproduction.com</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <Phone className="text-primary" />
+                    <span>+1 (555) 123-4567</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <MapPin className="text-primary" />
+                    <span>Los Angeles, CA</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="mt-8">
+              <div>
                 <h3 className="text-xl font-semibold mb-4">Follow Us</h3>
                 <div className="flex space-x-4">
                   <a
-                    href="https://www.instagram.com/s2visualproductions/profilecard/?igsh=MXBvZnoyeHR3N3hkbw=="
+                    href="https://www.instagram.com/s2visualproductions"
                     className="text-muted-foreground hover:text-primary transition-colors"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -103,7 +113,7 @@ const Contact = () => {
                     <Instagram size={24} />
                   </a>
                   <a
-                    href="https://www.facebook.com/share/15TN46X83N/?mibextid=wwXIfr"
+                    href="https://www.facebook.com/s2visualproductions"
                     className="text-muted-foreground hover:text-primary transition-colors"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -111,7 +121,7 @@ const Contact = () => {
                     <Facebook size={24} />
                   </a>
                   <a
-                    href="https://youtube.com/@s2visualproduction?si=GxOu1ExFTWvtVahn"
+                    href="https://youtube.com/@s2visualproduction"
                     className="text-muted-foreground hover:text-primary transition-colors"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -119,7 +129,7 @@ const Contact = () => {
                     <Youtube size={24} />
                   </a>
                   <a
-                    href="https://www.tiktok.com/@s2.visual.productions?_t=8sgqAd0Xyle&_r=1"
+                    href="https://www.tiktok.com/@s2.visual.productions"
                     className="text-muted-foreground hover:text-primary transition-colors font-medium"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -128,50 +138,6 @@ const Contact = () => {
                   </a>
                 </div>
               </div>
-            </div>
-
-            {/* Contact Form */}
-            <div>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                <div>
-                  <Input
-                    placeholder="Your Name"
-                    {...register("name", { required: "Name is required" })}
-                  />
-                  {errors.name && (
-                    <p className="text-sm text-destructive mt-1">{errors.name.message}</p>
-                  )}
-                </div>
-                <div>
-                  <Input
-                    type="email"
-                    placeholder="Your Email"
-                    {...register("email", {
-                      required: "Email is required",
-                      pattern: {
-                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: "Invalid email address"
-                      }
-                    })}
-                  />
-                  {errors.email && (
-                    <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
-                  )}
-                </div>
-                <div>
-                  <Textarea
-                    placeholder="Your Message"
-                    {...register("message", { required: "Message is required" })}
-                    rows={4}
-                  />
-                  {errors.message && (
-                    <p className="text-sm text-destructive mt-1">{errors.message.message}</p>
-                  )}
-                </div>
-                <Button type="submit" className="w-full">
-                  Send Message
-                </Button>
-              </form>
             </div>
           </div>
         </motion.div>
