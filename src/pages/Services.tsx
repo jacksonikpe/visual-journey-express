@@ -33,8 +33,7 @@ const Services = () => {
     {
       icon: Briefcase,
       title: "Freelancing Services",
-      description:
-        "Freelance photography and videography tailored for events, branding, and storytelling with a creative edge.",
+      description: "",
     },
   ];
 
