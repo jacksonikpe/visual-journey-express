@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import AnimatedBackground from "../components/AnimatedBackground";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const Index = () => {
   useEffect(() => {
@@ -112,11 +112,10 @@ const Index = () => {
         {/* Call to Action Section */}
         <section className="relative py-20">
           <div className="absolute inset-0 z-0">
-            <img
-              src="/lovable-uploads/94ceb6c1-e80a-4546-a589-67faa27e5d72.jpg"
+            <LazyLoadImage
+              src="https://res.cloudinary.com/didwhe7rc/image/upload/f_auto,q_auto/mountiains-photo-min_wtva76.jpg"
               alt="Mountain landscape"
               className="w-full h-full object-cover"
-              loading="lazy"
             />
             <div className="absolute inset-0 bg-black/50"></div>
           </div>
@@ -149,18 +148,21 @@ const recentWork = [
   {
     title: "Events",
     description: "Capturing the vibrancy and emotions of every gathering.",
-    image: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc",
+    image:
+      "https://res.cloudinary.com/didwhe7rc/image/upload/f_auto,q_auto/Weddingphoto_onge7u.jpg",
   },
   {
     title: "Togetherness",
     description: "Highlighting the warmth and connection in shared moments.",
-    image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21",
+    image:
+      "https://res.cloudinary.com/didwhe7rc/image/upload/f_auto,q_auto/swimming-capture-moment-min_asv5ii.jpg",
   },
   {
     title: "Freelance Projects",
     description:
       "Creative collaborations brought to life through stunning visuals.",
-    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e",
+    image:
+      "https://res.cloudinary.com/didwhe7rc/image/upload/f_auto,q_auto/Moment-Capture-Photo_axcdxl.jpg",
   },
 ];
 
