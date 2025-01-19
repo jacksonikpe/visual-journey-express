@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import AnimatedBackground from "../components/AnimatedBackground";
@@ -68,12 +68,12 @@ const Index = () => {
           </div>
         </section>
 
-      {/* Recent Work Section */}
+        {/* Recent Work Section */}
         <section className="py-20 relative overflow-hidden">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Recent Work</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {recentWork.map((work, index) => (
+              {recentWork.map((work) => (
                 <div key={work.title} className="group relative overflow-hidden rounded-lg aspect-video">
                   <img
                     src={work.image}
@@ -95,34 +95,35 @@ const Index = () => {
           </div>
         </section>
 
-      {/* Call to Action Section */}
-      <section className="relative py-20">
-        <div className="absolute inset-0 z-0">
-          <img
-            src="/lovable-uploads/94ceb6c1-e80a-4546-a589-67faa27e5d72.png"
-            alt="Mountain landscape"
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
-          <div className="absolute inset-0 bg-black/50"></div>
-        </div>
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
-            Are You Ready to Tell an Untold Story?
-          </h2>
-          <p className="text-xl text-white/90 mb-8">
-            Sound, Lights, Camera, Action.<br />
-            Let us transform your imagination into an unforgettable reality.
-          </p>
-          <Link
-            to="/contact"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors"
-          >
-            REACH OUT
-            <ArrowRight />
-          </Link>
-        </div>
-      </section>
+        {/* Call to Action Section */}
+        <section className="relative py-20">
+          <div className="absolute inset-0 z-0">
+            <img
+              src="/lovable-uploads/94ceb6c1-e80a-4546-a589-67faa27e5d72.png"
+              alt="Mountain landscape"
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-black/50"></div>
+          </div>
+          <div className="container mx-auto px-4 text-center relative z-10">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
+              Are You Ready to Tell an Untold Story?
+            </h2>
+            <p className="text-xl text-white/90 mb-8">
+              Sound, Lights, Camera, Action.<br />
+              Let us transform your imagination into an unforgettable reality.
+            </p>
+            <Link
+              to="/contact"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors"
+            >
+              REACH OUT
+              <ArrowRight />
+            </Link>
+          </div>
+        </section>
+      </div>
       
       <Footer />
     </div>
