@@ -3,7 +3,6 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { ProjectCard } from "../components/portfolio/ProjectCard";
 import { projects } from "../components/portfolio/projectsData";
-import VideoBackground from "../components/VideoBackground";
 
 const Portfolio = () => {
   const containerVariants = {
@@ -30,13 +29,12 @@ const Portfolio = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      <div className="flex-grow container mx-auto px-4 pt-24 pb-16 relative">
-        <VideoBackground />
+      <div className="flex-grow container mx-auto px-4 pt-24 pb-16">
         <motion.div
           initial="hidden"
           animate="visible"
           variants={containerVariants}
-          className="space-y-12 relative z-10"
+          className="space-y-12"
         >
           <motion.h1 
             variants={itemVariants}
