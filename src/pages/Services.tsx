@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Camera, Film, Video, Clapperboard, Briefcase } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import AnimatedBackground from "../components/AnimatedBackground";
+import VideoBackground from "../components/VideoBackground";
 
 const Services = () => {
   const services = [
@@ -40,17 +40,14 @@ const Services = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      <div className="flex-grow container mx-auto px-4 pt-24 pb-16">
+      <div className="flex-grow container mx-auto px-4 pt-24 pb-16 relative">
+        <VideoBackground />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="relative"
+          className="relative z-10"
         >
-          <div className="absolute inset-0 -mx-4 overflow-hidden">
-            <AnimatedBackground />
-          </div>
-
           <div className="relative z-10">
             <h1 className="text-4xl md:text-5xl font-bold mb-8 text-primary">
               Our Services

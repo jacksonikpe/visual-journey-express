@@ -1,21 +1,14 @@
 import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import VideoBackground from "../components/VideoBackground";
 
 const About = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      <div
-        className="flex-grow container mx-auto px-4 pt-24 pb-16 relative"
-        style={{
-          backgroundImage:
-            "url('https://res.cloudinary.com/didwhe7rc/image/upload/f_auto,q_auto/ocean-capture_nj1psj.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="absolute inset-0 bg-blue-900/40 backdrop-blur-sm"></div>
+      <div className="flex-grow container mx-auto px-4 pt-24 pb-16 relative">
+        <VideoBackground />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

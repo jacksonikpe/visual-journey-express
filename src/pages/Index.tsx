@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import VideoBackground from "../components/VideoBackground";
 
 const Index = () => {
   useEffect(() => {
@@ -31,15 +32,7 @@ const Index = () => {
       <div className="pt-24">
         {/* Hero Section */}
         <section className="relative min-h-[calc(100vh-6rem)] flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 z-0">
-            <img
-              src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2071&auto=format&fit=crop"
-              alt="Hero background"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-black/50"></div>
-          </div>
-
+          <VideoBackground />
           <div className="container mx-auto px-4 z-10">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="hero-title animate-fade-down">
@@ -111,14 +104,7 @@ const Index = () => {
 
         {/* Call to Action Section */}
         <section className="relative py-20">
-          <div className="absolute inset-0 z-0">
-            <LazyLoadImage
-              src="https://res.cloudinary.com/didwhe7rc/image/upload/f_auto,q_auto/mountiains-photo-min_wtva76.jpg"
-              alt="Mountain landscape"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-black/50"></div>
-          </div>
+          <VideoBackground />
           <div className="container mx-auto px-4 text-center relative z-10">
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
               Are You Ready to Tell an Untold Story?
