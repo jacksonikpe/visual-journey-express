@@ -41,15 +41,29 @@ const Services = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
       <div className="flex-grow container mx-auto px-4 pt-24 pb-16">
+        <div className="absolute inset-0 z-0">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className=" w-full h-full object-cover"
+          >
+            <source
+              src="https://res.cloudinary.com/didwhe7rc/video/upload/q_auto,f_auto/Sunset_t7cwo7.mp4"
+              type="video/mp4"
+            />
+          </video>
+        </div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="relative"
         >
-          <div className="absolute inset-0 -mx-4 overflow-hidden">
+          {/* <div className="absolute inset-0 -mx-4 overflow-hidden">
             <AnimatedBackground />
-          </div>
+          </div> */}
 
           <div className="relative z-10">
             <h1 className="text-4xl md:text-5xl font-bold mb-8 text-primary">

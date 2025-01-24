@@ -30,23 +30,30 @@ const Index = () => {
 
       <div className="pt-24">
         {/* Hero Section */}
-        <section className="relative min-h-[calc(100vh-6rem)] flex items-center justify-center overflow-hidden">
+        <section className="min-h-[calc(100vh-6rem)] flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 z-0">
-            <img
-              src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2071&auto=format&fit=crop"
-              alt="Hero background"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-black/50"></div>
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              className=" w-full h-full object-cover"
+            >
+              <source
+                src="https://res.cloudinary.com/didwhe7rc/video/upload/q_auto,f_auto/Sunset_t7cwo7.mp4"
+                type="video/mp4"
+              />
+            </video>
+            {/* <div className="absolute inset-0 bg-black/50"></div> */}
           </div>
 
-          <div className="container mx-auto px-4 z-10">
+          <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="hero-title animate-fade-down">
                 Turning Heartfelt Moments into{" "}
                 <span className="text-primary">Timeless Visuals</span>
               </h1>
-              <p className="mt-6 text-lg md:text-xl text-muted-foreground animate-fade-up">
+              <p className="mt-6 text-lg md:text-xl  animate-fade-up text-[#364354]">
                 At S2 Visual Productions, we specialize in capturing the essence
                 of every moment with authenticity and creativity. From corporate
                 events and personal photoshoots to short films, podcasts, and

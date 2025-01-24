@@ -1,11 +1,18 @@
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Instagram, Facebook, Youtube } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Instagram,
+  Facebook,
+  Youtube,
+} from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import emailjs from '@emailjs/browser';
+import emailjs from "@emailjs/browser";
 import { useToast } from "../hooks/use-toast";
 
 const contactFormSchema = z.object({
@@ -24,11 +31,22 @@ const Contact = () => {
 
   const onSubmit = async (data: ContactFormData) => {
     try {
-      await emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", data, "YOUR_USER_ID");
-      toast({ title: "Message sent!", description: "We will get back to you soon." });
+      await emailjs.send(
+        "YOUR_SERVICE_ID",
+        "YOUR_TEMPLATE_ID",
+        data,
+        "YOUR_USER_ID"
+      );
+      toast({
+        title: "Message sent!",
+        description: "We will get back to you soon.",
+      });
       form.reset();
     } catch (error) {
-      toast({ title: "Error", description: "Failed to send message. Please try again." });
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again.",
+      });
     }
   };
 
@@ -36,11 +54,25 @@ const Contact = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="container mx-auto px-4 py-24">
+        <div className="absolute inset-0 z-0">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className=" w-full h-full object-cover"
+          >
+            <source
+              src="https://res.cloudinary.com/didwhe7rc/video/upload/q_auto,f_auto/Sunset_t7cwo7.mp4"
+              type="video/mp4"
+            />
+          </video>
+        </div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="max-w-4xl mx-auto"
+          className="max-w-4xl mx-auto relative z-10"
         >
           <h1 className="text-4xl md:text-5xl font-bold text-center mb-12">
             Get in Touch
@@ -49,14 +81,21 @@ const Contact = () => {
           <div className="grid md:grid-cols-2 gap-12">
             {/* Contact Form */}
             <div className="bg-card p-6 rounded-lg shadow-lg">
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
                 <div>
                   <label className="block text-sm font-medium">Name</label>
                   <input
                     {...form.register("name")}
                     className="mt-1 block w-full border border-muted-foreground rounded-md p-2"
                   />
-                  {form.formState.errors.name && <p className="text-red-500">{form.formState.errors.name.message}</p>}
+                  {form.formState.errors.name && (
+                    <p className="text-red-500">
+                      {form.formState.errors.name.message}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium">Email</label>
@@ -64,7 +103,11 @@ const Contact = () => {
                     {...form.register("email")}
                     className="mt-1 block w-full border border-muted-foreground rounded-md p-2"
                   />
-                  {form.formState.errors.email && <p className="text-red-500">{form.formState.errors.email.message}</p>}
+                  {form.formState.errors.email && (
+                    <p className="text-red-500">
+                      {form.formState.errors.email.message}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium">Message</label>
@@ -73,9 +116,16 @@ const Contact = () => {
                     className="mt-1 block w-full border border-muted-foreground rounded-md p-2"
                     rows={4}
                   />
-                  {form.formState.errors.message && <p className="text-red-500">{form.formState.errors.message.message}</p>}
+                  {form.formState.errors.message && (
+                    <p className="text-red-500">
+                      {form.formState.errors.message.message}
+                    </p>
+                  )}
                 </div>
-                <button type="submit" className="w-full bg-primary text-primary-foreground rounded-md p-2">
+                <button
+                  type="submit"
+                  className="w-full bg-primary text-primary-foreground rounded-md p-2"
+                >
                   Send Message
                 </button>
               </form>
@@ -84,7 +134,9 @@ const Contact = () => {
             {/* Contact Information */}
             <div className="space-y-8">
               <div>
-                <h3 className="text-xl font-semibold mb-4">Contact Information</h3>
+                <h3 className="text-xl font-semibold mb-4">
+                  Contact Information
+                </h3>
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3">
                     <Mail className="text-primary" />
@@ -92,11 +144,11 @@ const Contact = () => {
                   </div>
                   <div className="flex items-center space-x-3">
                     <Phone className="text-primary" />
-                    <span>+1 (555) 123-4567</span>
+                    <span>0449530305</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <MapPin className="text-primary" />
-                    <span>Los Angeles, CA</span>
+                    <span>Sydney, Australia</span>
                   </div>
                 </div>
               </div>
