@@ -15,6 +15,7 @@ const VideoBackground = () => {
           src="https://res.cloudinary.com/didwhe7rc/video/upload/v1737713418/0124_qsg7zm.mp4"
           type="video/mp4"
         />
+        Your browser does not support the video tag.
       </video>
     </div>
   );
