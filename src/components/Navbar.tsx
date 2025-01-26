@@ -25,19 +25,16 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed w-full z-50 transition-all duration-300 ${
+      className={`fixed w-full z-50 transition-all duration-300 bg-background/95 px-6 ${
         isScrolled ? "bg-background/95 backdrop-blur-sm py-4" : "py-6"
       }`}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
-          <Link
-            to="/"
-            className="hover:opacity-90 transition-opacity"
-          >
-            <img 
-              src="/lovable-uploads/86030fa8-6840-48b2-936a-a81ff4e1b108.png" 
-              alt="S2 Visual Production Logo" 
+          <Link to="/" className="hover:opacity-90 transition-opacity">
+            <img
+              src="/lovable-uploads/86030fa8-6840-48b2-936a-a81ff4e1b108.png"
+              alt="S2 Visual Production Logo"
               className="h-12 w-auto"
             />
           </Link>
