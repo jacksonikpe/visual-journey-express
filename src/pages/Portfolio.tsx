@@ -29,7 +29,7 @@ const Portfolio = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      <div className="flex-grow container mx-auto px-4 pt-24 pb-16">
+      <div className="flex-grow container mx-auto px-4 pt-36 pb-16">
         <div className="absolute inset-0 z-0">
           <video
             autoPlay
