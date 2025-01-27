@@ -1,11 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
+  const [loadedImages, setLoadedImages] = useState<{ [key: string]: boolean }>({});
+
   useEffect(() => {
     const elements = document.querySelectorAll(".animate-on-scroll");
     const observer = new IntersectionObserver(
@@ -23,6 +26,10 @@ const Index = () => {
     elements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
+
+  const handleImageLoad = (title: string) => {
+    setLoadedImages((prev) => ({ ...prev, [title]: true }));
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -91,9 +98,13 @@ const Index = () => {
                   key={work.title}
                   className="group relative overflow-hidden rounded-lg aspect-video"
                 >
+                  {!loadedImages[work.title] && (
+                    <Skeleton className="w-full h-full absolute inset-0" />
+                  )}
                   <img
                     src={work.image}
                     alt={work.title}
+                    onLoad={() => handleImageLoad(work.title)}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
