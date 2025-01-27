@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useState } from "react";
 
 interface ProjectDetails {
   duration: string;
@@ -28,6 +30,8 @@ interface ProjectProps {
 }
 
 export const ProjectCard = ({ project }: { project: ProjectProps }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -35,10 +39,14 @@ export const ProjectCard = ({ project }: { project: ProjectProps }) => {
           whileHover={{ scale: 1.02 }}
           className={`group relative overflow-hidden rounded-lg cursor-pointer ${project.span}`}
         >
+          {!imageLoaded && (
+            <Skeleton className="w-full h-full absolute inset-0" />
+          )}
           <LazyLoadImage
             src={project.image}
             alt={project.title}
             className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-110"
+            afterLoad={() => setImageLoaded(true)}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500">
             <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-6 group-hover:translate-y-0 transition-transform duration-500">
@@ -60,10 +68,14 @@ export const ProjectCard = ({ project }: { project: ProjectProps }) => {
           </DialogDescription>
         </DialogHeader>
         <div className="mt-6 space-y-6">
+          {!imageLoaded && (
+            <Skeleton className="w-full h-[400px] rounded-lg" />
+          )}
           <img
             src={project.image}
             alt={project.title}
             className="w-full rounded-lg"
+            onLoad={() => setImageLoaded(true)}
           />
           <div className="space-y-4">
             <p className="text-muted-foreground leading-relaxed">
