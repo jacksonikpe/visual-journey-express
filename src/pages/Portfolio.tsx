@@ -69,10 +69,16 @@ const Portfolio = () => {
 
           <motion.div
             variants={containerVariants}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[300px]"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 auto-rows-[200px] sm:auto-rows-[250px] md:auto-rows-[300px]"
           >
             {projects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
+              <motion.div
+                key={project.id}
+                variants={itemVariants}
+                className={`${project.span} relative overflow-hidden transition-transform hover:scale-[1.02]`}
+              >
+                <ProjectCard project={project} />
+              </motion.div>
             ))}
           </motion.div>
         </motion.div>

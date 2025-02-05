@@ -13,7 +13,7 @@ export const projects = [
     },
     image:
       "https://res.cloudinary.com/didwhe7rc/image/upload/f_auto,q_auto/capture-moment6-min_zkk8o3.jpg",
-    span: "col-span-2 row-span-2",
+    span: "sm:col-span-2 sm:row-span-2",
   },
   {
     id: 2,
@@ -45,7 +45,7 @@ export const projects = [
     },
     image:
       "https://res.cloudinary.com/didwhe7rc/image/upload/f_auto,q_auto/capture-moment4_iuulab.jpg",
-    span: "col-span-1 row-span-2",
+    span: "sm:row-span-2",
   },
   {
     id: 4,
@@ -61,7 +61,7 @@ export const projects = [
     },
     image:
       "https://res.cloudinary.com/didwhe7rc/image/upload/f_auto,q_auto/stage-capture-moment-min_q05fj7.jpg",
-    span: "col-span-2 row-span-1",
+    span: "sm:col-span-2 row-span-1",
   },
   {
     id: 5,
@@ -93,7 +93,7 @@ export const projects = [
     },
     image:
       "https://res.cloudinary.com/didwhe7rc/image/upload/f_auto,q_auto/capture-moment2_ttbzad.jpg",
-    span: "col-span-2 row-span-1",
+    span: "sm:col-span-2 row-span-1",
   },
   {
     id: 7,
@@ -109,7 +109,7 @@ export const projects = [
     },
     image:
       "https://res.cloudinary.com/didwhe7rc/image/upload/f_auto,q_auto/moment-photo4_n5wnar.jpg",
-    span: "col-span-1 row-span-2",
+    span: "sm:row-span-2",
   },
   {
     id: 8,
@@ -125,7 +125,7 @@ export const projects = [
     },
     image:
       "https://res.cloudinary.com/didwhe7rc/image/upload/f_auto,q_auto/moment-photo1_irtst1.jpg",
-    span: "col-span-2 row-span-2",
+    span: "sm:col-span-2 sm:row-span-2",
   },
   {
     id: 9,
@@ -157,6 +157,6 @@ export const projects = [
     },
     image:
       "https://res.cloudinary.com/didwhe7rc/image/upload/f_auto,q_auto/moment-photo2_qvi2lk.jpg",
-    span: "col-span-2 row-span-1",
+    span: "sm:col-span-2 row-span-1",
   },
 ];
