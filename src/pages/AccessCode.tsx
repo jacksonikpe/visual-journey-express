@@ -66,8 +66,8 @@ const AccessCode = () => {
               onChange={setValue}
               render={({ slots }) => (
                 <InputOTPGroup>
-                  {slots.map((slot, index) => (
-                    <InputOTPSlot key={index} {...slot} index={index} />
+                  {slots.map((slot, i) => (
+                    <InputOTPSlot key={i} index={i} />
                   ))}
                 </InputOTPGroup>
               )}

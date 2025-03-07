@@ -42,6 +42,10 @@ const InputOTPSlot = React.forwardRef<
   const hasFakeCaret = slots[index]?.hasFakeCaret || false
   const isActive = slots[index]?.isActive || false
 
+  // Create a clean version of props without React DOM warnings
+  // Don't pass the index prop to the DOM element
+  const { index: _, ...cleanProps } = props
+
   return (
     <div
       ref={ref}
@@ -50,7 +54,9 @@ const InputOTPSlot = React.forwardRef<
         isActive && "z-10 ring-2 ring-ring ring-offset-background",
         className
       )}
-      {...props}
+      data-active={isActive || undefined}
+      data-fake-caret={hasFakeCaret || undefined}
+      {...cleanProps}
     >
       {char}
       {hasFakeCaret && (
