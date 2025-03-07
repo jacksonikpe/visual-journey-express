@@ -29,21 +29,21 @@ const InputOTPGroup = React.forwardRef<
 ))
 InputOTPGroup.displayName = "InputOTPGroup"
 
+type InputOTPSlotProps = React.ComponentPropsWithoutRef<"div"> & {
+  index: number
+}
+
 const InputOTPSlot = React.forwardRef<
   React.ElementRef<"div">,
-  React.ComponentPropsWithoutRef<"div"> & { index: number }
+  InputOTPSlotProps
 >(({ index, className, ...props }, ref) => {
   const inputOTPContext = React.useContext(OTPInputContext)
-  
-  // Check if inputOTPContext and slots exist
-  const slots = inputOTPContext?.slots || []
-  // Use optional chaining and provide default values
-  const char = slots[index]?.char || ''
-  const hasFakeCaret = slots[index]?.hasFakeCaret || false
-  const isActive = slots[index]?.isActive || false
+  const slot = inputOTPContext?.slots?.[index] || {}
+  const char = slot.char || ''
+  const hasFakeCaret = slot.hasFakeCaret || false
+  const isActive = slot.isActive || false
 
-  // Create a clean version of props without React DOM warnings
-  // Don't pass the index prop to the DOM element
+  // Create a clean version of props without non-DOM attributes
   const { index: _, ...cleanProps } = props
 
   return (
