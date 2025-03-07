@@ -39,11 +39,14 @@ const InputOTPSlot = React.forwardRef<
 >(({ index, className, ...props }, ref) => {
   const inputOTPContext = React.useContext(OTPInputContext)
   const slot = inputOTPContext?.slots?.[index] || {}
-  const char = slot.char || ''
-  const hasFakeCaret = slot.hasFakeCaret || false
-  const isActive = slot.isActive || false
+  
+  // Use type assertion to avoid TypeScript errors
+  const typedSlot = slot as { char?: string; hasFakeCaret?: boolean; isActive?: boolean }
+  const char = typedSlot.char || ''
+  const hasFakeCaret = typedSlot.hasFakeCaret || false
+  const isActive = typedSlot.isActive || false
 
-  // Create a clean version of props without non-DOM attributes
+  // Remove the index prop to avoid DOM warnings
   const { index: _, ...cleanProps } = props
 
   return (

@@ -29,16 +29,24 @@ const AccessCode = () => {
         title: "Success",
         description: "Access granted. Redirecting to admin panel...",
       });
-      setTimeout(() => navigate("/admin"), 1000);
+      
+      // Clear localStorage first to ensure fresh state
+      localStorage.setItem("admin_authorized", "true");
+      
+      // Use a shorter timeout and ensure navigate is called
+      setTimeout(() => {
+        navigate("/admin");
+        console.log("Navigating to /admin");
+      }, 500);
     } else {
       toast({
         title: "Error",
         description: "Invalid access code. Please try again.",
         variant: "destructive",
       });
+      setIsSubmitting(false);
     }
-    
-    setIsSubmitting(false);
+    // Note: We're not setting isSubmitting to false on success because we're redirecting
   };
 
   return (
