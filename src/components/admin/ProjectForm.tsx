@@ -1,23 +1,22 @@
-
 import { useState, useRef } from "react";
 import { toast } from "@/hooks/use-toast";
-import { 
-  Card, 
-  CardContent, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { 
+import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import { Image, Upload, Save, X } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -34,69 +33,75 @@ const formSchema = z.object({
   "details.duration": z.string().min(1, { message: "Duration is required" }),
   "details.location": z.string().min(1, { message: "Location is required" }),
   "details.year": z.string().min(1, { message: "Year is required" }),
-  "details.role": z.string().min(1, { message: "Role is required" })
+  "details.role": z.string().min(1, { message: "Role is required" }),
 });
 
-export const ProjectForm = ({ 
-  project, 
-  onSave, 
-  onCancel 
-}: { 
-  project: any, 
-  onSave: (project: any) => void,
-  onCancel: () => void
+export const ProjectForm = ({
+  project,
+  onSave,
+  onCancel,
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  project: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onSave: (project: any) => void;
+  onCancel: () => void;
 }) => {
   const [image, setImage] = useState<string>(project?.image || "");
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
-  const defaultValues = project ? {
-    ...project,
-    "details.duration": project.details.duration,
-    "details.location": project.details.location,
-    "details.year": project.details.year,
-    "details.role": project.details.role,
-  } : {
-    title: "",
-    category: "",
-    description: "",
-    story: "",
-    span: "col-span-1 row-span-1",
-    "details.duration": "",
-    "details.location": "",
-    "details.year": "",
-    "details.role": ""
-  };
+
+  const defaultValues = project
+    ? {
+        ...project,
+        "details.duration": project.details.duration,
+        "details.location": project.details.location,
+        "details.year": project.details.year,
+        "details.role": project.details.role,
+      }
+    : {
+        title: "",
+        category: "",
+        description: "",
+        story: "",
+        span: "col-span-1 row-span-1",
+        "details.duration": "",
+        "details.location": "",
+        "details.year": "",
+        "details.role": "",
+      };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues
+    defaultValues,
   });
 
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
-    
+
     const file = files[0];
     setUploading(true);
-    
+
     try {
       // Create a FormData object to send the file to Cloudinary
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', 'portfolio_uploads'); // Cloudinary upload preset (unsigned)
-      
+      formData.append("file", file);
+      formData.append("upload_preset", "portfolio_uploads"); // Cloudinary upload preset (unsigned)
+
       // Upload to Cloudinary
       const response = await fetch(
-        'https://api.cloudinary.com/v1_1/didwhe7rc/image/upload',
+        "https://api.cloudinary.com/v1_1/didwhe7rc/image/upload",
         {
-          method: 'POST',
+          method: "POST",
           body: formData,
         }
       );
-      
+
       const data = await response.json();
-      
+
       if (data.secure_url) {
         setImage(data.secure_url);
         toast({
@@ -104,7 +109,7 @@ export const ProjectForm = ({
           description: "Image uploaded successfully",
         });
       } else {
-        throw new Error('Upload failed');
+        throw new Error("Upload failed");
       }
     } catch (error) {
       toast({
@@ -126,7 +131,7 @@ export const ProjectForm = ({
       });
       return;
     }
-    
+
     // Transform form data back to project structure
     const projectData = {
       id: project?.id || Date.now(),
@@ -137,15 +142,15 @@ export const ProjectForm = ({
         location: values["details.location"],
         year: values["details.year"],
         role: values["details.role"],
-      }
+      },
     };
-    
+
     // Remove the flattened details fields
     delete projectData["details.duration"];
     delete projectData["details.location"];
     delete projectData["details.year"];
     delete projectData["details.role"];
-    
+
     onSave(projectData);
   };
 
@@ -162,16 +167,16 @@ export const ProjectForm = ({
               <div className="flex flex-col gap-4">
                 <FormLabel>Project Image</FormLabel>
                 <div className="flex items-center gap-4">
-                  <div 
+                  <div
                     className="relative w-32 h-32 border-2 border-dashed border-input rounded-md flex items-center justify-center overflow-hidden"
                     onClick={() => fileInputRef.current?.click()}
                   >
                     {uploading ? (
                       <Skeleton className="w-full h-full" />
                     ) : image ? (
-                      <img 
-                        src={image} 
-                        alt="Project preview" 
+                      <img
+                        src={image}
+                        alt="Project preview"
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -235,14 +240,20 @@ export const ProjectForm = ({
                   <FormItem>
                     <FormLabel>Grid Layout</FormLabel>
                     <FormControl>
-                      <select 
+                      <select
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base"
                         {...field}
                       >
-                        <option value="col-span-1 row-span-1">Small (1x1)</option>
-                        <option value="sm:col-span-2 row-span-1">Wide (2x1)</option>
+                        <option value="col-span-1 row-span-1">
+                          Small (1x1)
+                        </option>
+                        <option value="sm:col-span-2 row-span-1">
+                          Wide (2x1)
+                        </option>
                         <option value="sm:row-span-2">Tall (1x2)</option>
-                        <option value="sm:col-span-2 sm:row-span-2">Large (2x2)</option>
+                        <option value="sm:col-span-2 sm:row-span-2">
+                          Large (2x2)
+                        </option>
                       </select>
                     </FormControl>
                     <FormMessage />
@@ -258,8 +269,8 @@ export const ProjectForm = ({
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <textarea 
-                        className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-base" 
+                      <textarea
+                        className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-base"
                         placeholder="Project description"
                         {...field}
                       />
@@ -276,8 +287,8 @@ export const ProjectForm = ({
                   <FormItem>
                     <FormLabel>Story</FormLabel>
                     <FormControl>
-                      <textarea 
-                        className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-base" 
+                      <textarea
+                        className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-base"
                         placeholder="Behind the scenes story"
                         {...field}
                       />
