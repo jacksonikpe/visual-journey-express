@@ -46,10 +46,6 @@ const InputOTPSlot = React.forwardRef<
   const hasFakeCaret = typedSlot.hasFakeCaret || false
   const isActive = typedSlot.isActive || false
 
-  // Create a clean version of props without non-DOM attributes
-  // We need to ensure index is not passed to the div element
-  const { index: _index, ...cleanProps } = props
-
   return (
     <div
       ref={ref}
@@ -60,7 +56,7 @@ const InputOTPSlot = React.forwardRef<
       )}
       data-active={isActive || undefined}
       data-fake-caret={hasFakeCaret || undefined}
-      {...cleanProps}
+      {...props}
     >
       {char}
       {hasFakeCaret && (
