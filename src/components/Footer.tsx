@@ -67,7 +67,7 @@ const Footer = () => {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-muted-foreground/50 hover:text-muted-foreground text-xs flex items-center gap-1"
+                className="text-muted-foreground/50 hover:text-white text-xs flex items-center gap-1"
                 asChild
               >
                 <Link to="/access-code">
