@@ -1,39 +1,39 @@
+
 import { motion } from "framer-motion";
 import { Camera, Film, Video, Clapperboard, Briefcase } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import AnimatedBackground from "../components/AnimatedBackground";
+import { getPageContent } from "@/lib/contentStore";
 
 const Services = () => {
+  const content = getPageContent("services");
+  const servicesList = content.servicesList as Record<string, string>;
+  
   const services = [
     {
       icon: Film,
       title: "Documentary Production",
-      description:
-        "Compelling storytelling through feature-length documentaries that capture real-life stories with depth and authenticity.",
+      description: servicesList.documentary,
     },
     {
       icon: Video,
       title: "Commercial Videography",
-      description:
-        "High-quality video production services for businesses, including promotional content and corporate communications.",
+      description: servicesList.commercial,
     },
     {
       icon: Camera,
       title: "Photography",
-      description:
-        "Professional photography services for events, portraits, and commercial projects with attention to detail and artistic vision.",
+      description: servicesList.photography,
     },
     {
       icon: Clapperboard,
       title: "Short Films",
-      description:
-        "Creative short film production that brings your stories to life with cinematic excellence and emotional impact.",
+      description: servicesList.shortFilms,
     },
     {
       icon: Briefcase,
       title: "Freelancing Services",
-      description: "",
+      description: servicesList.freelancing,
     },
   ];
 
@@ -61,13 +61,9 @@ const Services = () => {
           transition={{ duration: 0.5 }}
           className="relative"
         >
-          {/* <div className="absolute inset-0 -mx-4 overflow-hidden">
-            <AnimatedBackground />
-          </div> */}
-
           <div className="relative z-10">
             <h1 className="text-4xl md:text-5xl font-bold mb-8 text-primary">
-              Our Services
+              {content.mainTitle as string}
             </h1>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {services.map((service, index) => (

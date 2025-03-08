@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
@@ -5,9 +6,11 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getPageContent } from "@/lib/contentStore";
 
 const Index = () => {
   const [loadedImages, setLoadedImages] = useState<{ [key: string]: boolean }>({});
+  const content = getPageContent("home");
 
   useEffect(() => {
     const elements = document.querySelectorAll(".animate-on-scroll");
@@ -31,6 +34,9 @@ const Index = () => {
     setLoadedImages((prev) => ({ ...prev, [title]: true }));
   };
 
+  // Get the CTA section content
+  const ctaSection = content.ctaSection as Record<string, string>;
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -51,21 +57,16 @@ const Index = () => {
                 type="video/mp4"
               />
             </video>
-            {/* <div className="absolute inset-0 bg-black/50"></div> */}
           </div>
 
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="hero-title animate-fade-down">
-                Turning Heartfelt Moments into{" "}
+                {content.heroTitle as string}{" "}
                 <span className="text-primary">Timeless Visuals</span>
               </h1>
-              <p className="mt-6 text-lg md:text-xl  animate-fade-up text-[#364354]">
-                At S2 Visual Productions, we specialize in capturing the essence
-                of every moment with authenticity and creativity. From corporate
-                events and personal photoshoots to short films, podcasts, and
-                documentaries, we bring your vision to life with passion and
-                precision.
+              <p className="mt-6 text-lg md:text-xl animate-fade-up text-[#364354]">
+                {content.heroDescription as string}
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up">
                 <Link
@@ -139,12 +140,15 @@ const Index = () => {
           </div>
           <div className="container mx-auto px-4 text-center relative z-10">
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
-              Are You Ready to Tell an Untold Story?
+              {ctaSection.title}
             </h2>
             <p className="text-xl text-white/90 mb-8">
-              Sound, Lights, Camera, Action.
-              <br />
-              Let us transform your imagination into an unforgettable reality.
+              {ctaSection.description.split('\n').map((line, i) => (
+                <span key={i}>
+                  {line}
+                  {i < ctaSection.description.split('\n').length - 1 && <br />}
+                </span>
+              ))}
             </p>
             <Link
               to="/contact"

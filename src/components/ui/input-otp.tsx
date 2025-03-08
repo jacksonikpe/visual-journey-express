@@ -46,8 +46,9 @@ const InputOTPSlot = React.forwardRef<
   const hasFakeCaret = typedSlot.hasFakeCaret || false
   const isActive = typedSlot.isActive || false
 
-  // Remove the index prop to avoid DOM warnings
-  const { index: _, ...cleanProps } = props
+  // Create a clean version of props without non-DOM attributes
+  // We need to ensure index is not passed to the div element
+  const { index: _index, ...cleanProps } = props
 
   return (
     <div

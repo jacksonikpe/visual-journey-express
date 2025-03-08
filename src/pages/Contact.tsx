@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import {
   Mail,
@@ -14,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import emailjs from "@emailjs/browser";
 import { useToast } from "../hooks/use-toast";
+import { getPageContent } from "@/lib/contentStore";
 
 const contactFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -25,6 +27,9 @@ type ContactFormData = z.infer<typeof contactFormSchema>;
 
 const Contact = () => {
   const { toast } = useToast();
+  const content = getPageContent("contact");
+  const contactInfo = content.contactInfo as Record<string, string>;
+  
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactFormSchema),
   });
@@ -75,7 +80,7 @@ const Contact = () => {
           className="max-w-4xl mx-auto relative z-10"
         >
           <h1 className="text-4xl md:text-5xl font-bold text-center mb-12">
-            Get in Touch
+            {content.mainTitle as string}
           </h1>
 
           <div className="grid md:grid-cols-2 gap-12">
@@ -140,15 +145,15 @@ const Contact = () => {
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3">
                     <Mail className="text-primary" />
-                    <span>info@s2visualproduction.com</span>
+                    <span>{contactInfo.email}</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Phone className="text-primary" />
-                    <span>0449530305</span>
+                    <span>{contactInfo.phone}</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <MapPin className="text-primary" />
-                    <span>Sydney, Australia</span>
+                    <span>{contactInfo.location}</span>
                   </div>
                 </div>
               </div>

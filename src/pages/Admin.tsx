@@ -7,8 +7,10 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { ProjectForm } from "../components/admin/ProjectForm";
 import { ProjectList } from "../components/admin/ProjectList";
+import { ContentEditor } from "../components/admin/ContentEditor";
 import { projects } from "../components/portfolio/projectsData";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus } from "lucide-react";
 
 const Admin = () => {
@@ -107,31 +109,46 @@ const Admin = () => {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-8 relative z-10"
         >
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-primary">
-              Portfolio Admin
-            </h1>
-            {!isAddingNew && !editingProject && (
-              <Button onClick={handleAddNew} className="flex items-center gap-2">
-                <Plus size={16} />
-                Add New Project
-              </Button>
-            )}
-          </div>
+          <h1 className="text-3xl md:text-4xl font-bold text-primary">
+            Admin Dashboard
+          </h1>
 
-          {(isAddingNew || editingProject) ? (
-            <ProjectForm
-              project={editingProject}
-              onSave={handleSave}
-              onCancel={handleCancel}
-            />
-          ) : (
-            <ProjectList
-              projects={adminProjects}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          )}
+          <Tabs defaultValue="content" className="w-full">
+            <TabsList className="mb-8">
+              <TabsTrigger value="content">Website Content</TabsTrigger>
+              <TabsTrigger value="portfolio">Portfolio Projects</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="content">
+              <ContentEditor />
+            </TabsContent>
+            
+            <TabsContent value="portfolio">
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="text-2xl font-bold">Portfolio Management</h2>
+                {!isAddingNew && !editingProject && (
+                  <Button onClick={handleAddNew} className="flex items-center gap-2">
+                    <Plus size={16} />
+                    Add New Project
+                  </Button>
+                )}
+              </div>
+
+              {(isAddingNew || editingProject) ? (
+                <ProjectForm
+                  project={editingProject}
+                  onSave={handleSave}
+                  onCancel={handleCancel}
+                />
+              ) : (
+                <ProjectList
+                  projects={adminProjects}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
+              )}
+            </TabsContent>
+          </Tabs>
         </motion.div>
       </div>
       <Footer />
