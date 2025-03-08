@@ -1,5 +1,7 @@
-import { Instagram, Facebook, Youtube } from "lucide-react";
+
+import { Instagram, Facebook, Youtube, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const Footer = () => {
   return (
@@ -58,9 +60,22 @@ const Footer = () => {
                 TikTok
               </a>
             </div>
-            <p className="text-sm text-muted-foreground">
-              © 2024 by S2 Visual Productions
-            </p>
+            <div className="flex flex-col items-center md:items-end space-y-2">
+              <p className="text-sm text-muted-foreground">
+                © 2024 by S2 Visual Productions
+              </p>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-muted-foreground/50 hover:text-muted-foreground text-xs flex items-center gap-1"
+                asChild
+              >
+                <Link to="/access-code">
+                  <Lock size={12} />
+                  Admin
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
