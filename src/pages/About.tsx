@@ -1,11 +1,26 @@
 
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { getPageContent } from "@/lib/contentStore";
+import { getPageContent, CONTENT_UPDATED_EVENT } from "@/lib/contentStore";
 
 const About = () => {
-  const content = getPageContent("about");
+  const [content, setContent] = useState(getPageContent("about"));
+  
+  useEffect(() => {
+    // Listen for content updates
+    const handleContentUpdate = () => {
+      setContent(getPageContent("about"));
+    };
+    
+    window.addEventListener(CONTENT_UPDATED_EVENT, handleContentUpdate);
+    
+    // Cleanup listener on component unmount
+    return () => {
+      window.removeEventListener(CONTENT_UPDATED_EVENT, handleContentUpdate);
+    };
+  }, []);
   
   return (
     <div className="min-h-screen flex flex-col bg-background">

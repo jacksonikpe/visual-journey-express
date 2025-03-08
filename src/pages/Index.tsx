@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
@@ -6,13 +5,19 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getPageContent } from "@/lib/contentStore";
+import { getPageContent, CONTENT_UPDATED_EVENT } from "@/lib/contentStore";
 
 const Index = () => {
   const [loadedImages, setLoadedImages] = useState<{ [key: string]: boolean }>({});
-  const content = getPageContent("home");
+  const [content, setContent] = useState(getPageContent("home"));
 
   useEffect(() => {
+    const handleContentUpdate = () => {
+      setContent(getPageContent("home"));
+    };
+    
+    window.addEventListener(CONTENT_UPDATED_EVENT, handleContentUpdate);
+    
     const elements = document.querySelectorAll(".animate-on-scroll");
     const observer = new IntersectionObserver(
       (entries) => {
@@ -27,14 +32,17 @@ const Index = () => {
     );
 
     elements.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+    
+    return () => {
+      window.removeEventListener(CONTENT_UPDATED_EVENT, handleContentUpdate);
+      observer.disconnect();
+    };
   }, []);
 
   const handleImageLoad = (title: string) => {
     setLoadedImages((prev) => ({ ...prev, [title]: true }));
   };
 
-  // Get the CTA section content
   const ctaSection = content.ctaSection as Record<string, string>;
 
   return (
@@ -42,7 +50,6 @@ const Index = () => {
       <Navbar />
 
       <div className="pt-24">
-        {/* Hero Section */}
         <section className="min-h-[calc(100vh-6rem)] flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 z-0">
             <video
@@ -87,7 +94,6 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Recent Work Section */}
         <section className="py-20 relative overflow-hidden">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
@@ -128,7 +134,6 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Call to Action Section */}
         <section className="relative py-20">
           <div className="absolute inset-0 z-0">
             <LazyLoadImage

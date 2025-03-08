@@ -1,5 +1,5 @@
-
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import {
   Mail,
   Phone,
@@ -15,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import emailjs from "@emailjs/browser";
 import { useToast } from "../hooks/use-toast";
-import { getPageContent } from "@/lib/contentStore";
+import { getPageContent, CONTENT_UPDATED_EVENT } from "@/lib/contentStore";
 
 const contactFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -27,7 +27,20 @@ type ContactFormData = z.infer<typeof contactFormSchema>;
 
 const Contact = () => {
   const { toast } = useToast();
-  const content = getPageContent("contact");
+  const [content, setContent] = useState(getPageContent("contact"));
+  
+  useEffect(() => {
+    const handleContentUpdate = () => {
+      setContent(getPageContent("contact"));
+    };
+    
+    window.addEventListener(CONTENT_UPDATED_EVENT, handleContentUpdate);
+    
+    return () => {
+      window.removeEventListener(CONTENT_UPDATED_EVENT, handleContentUpdate);
+    };
+  }, []);
+  
   const contactInfo = content.contactInfo as Record<string, string>;
   
   const form = useForm<ContactFormData>({
@@ -84,7 +97,6 @@ const Contact = () => {
           </h1>
 
           <div className="grid md:grid-cols-2 gap-12">
-            {/* Contact Form */}
             <div className="bg-card p-6 rounded-lg shadow-lg">
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -136,7 +148,6 @@ const Contact = () => {
               </form>
             </div>
 
-            {/* Contact Information */}
             <div className="space-y-8">
               <div>
                 <h3 className="text-xl font-semibold mb-4">

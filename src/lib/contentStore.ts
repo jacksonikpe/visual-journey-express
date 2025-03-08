@@ -1,4 +1,3 @@
-
 // Simple client-side CMS to store editable content
 // In a production app, this would be backed by a database
 
@@ -13,6 +12,9 @@ export type WebsiteContent = {
   services: PageContent;
   contact: PageContent;
 };
+
+// Custom event for content updates
+export const CONTENT_UPDATED_EVENT = 'content-updated';
 
 // Initialize with default content from the website
 const defaultContent: WebsiteContent = {
@@ -77,11 +79,19 @@ export const getPageContent = (page: keyof WebsiteContent) => websiteContent[pag
 export const updateContent = (newContent: WebsiteContent) => {
   websiteContent = newContent;
   localStorage.setItem('websiteContent', JSON.stringify(websiteContent));
+  
+  // Dispatch a custom event to notify all components of content change
+  window.dispatchEvent(new CustomEvent(CONTENT_UPDATED_EVENT, { detail: websiteContent }));
+  
   return websiteContent;
 };
 
 export const resetContent = () => {
   websiteContent = defaultContent;
   localStorage.setItem('websiteContent', JSON.stringify(websiteContent));
+  
+  // Dispatch event for content reset too
+  window.dispatchEvent(new CustomEvent(CONTENT_UPDATED_EVENT, { detail: websiteContent }));
+  
   return websiteContent;
 };
