@@ -1,5 +1,6 @@
-// Simple client-side CMS to store editable content
-// In a production app, this would be backed by a database
+
+// Content management system with Supabase integration
+import { supabase } from './supabase';
 
 // Define content structure
 export type PageContent = {
@@ -41,7 +42,7 @@ const defaultContent: WebsiteContent = {
       commercial: "High-quality video production services for businesses, including promotional content and corporate communications.",
       photography: "Professional photography services for events, portraits, and commercial projects with attention to detail and artistic vision.",
       shortFilms: "Creative short film production that brings your stories to life with cinematic excellence and emotional impact.",
-      freelancing: ""
+      freelancing: "Professional freelance services for various visual production needs, tailored to your specific project requirements."
     }
   },
   contact: {
@@ -54,44 +55,108 @@ const defaultContent: WebsiteContent = {
   }
 };
 
-// Get content from localStorage or use default
-const getStoredContent = (): WebsiteContent => {
-  const stored = localStorage.getItem('websiteContent');
-  if (stored) {
-    try {
-      return JSON.parse(stored);
-    } catch (e) {
-      console.error("Error parsing stored content:", e);
-      return defaultContent;
+// Content state 
+let websiteContent: WebsiteContent = defaultContent;
+let isLoaded = false;
+
+// Initialize the content from Supabase once at startup
+export const initializeContent = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('website_content')
+      .select('content')
+      .single();
+
+    if (error) {
+      console.error("Error fetching content from Supabase:", error);
+      // If there's an error (like table doesn't exist yet), load from localStorage as fallback
+      const stored = localStorage.getItem('websiteContent');
+      if (stored) {
+        try {
+          websiteContent = JSON.parse(stored);
+          return;
+        } catch (e) {
+          console.error("Error parsing stored content:", e);
+        }
+      }
+      // Insert default content into Supabase for first-time setup
+      const { error: insertError } = await supabase
+        .from('website_content')
+        .insert({ id: 1, content: defaultContent });
+      
+      if (insertError) console.error("Error inserting default content:", insertError);
+    } else if (data) {
+      websiteContent = data.content;
     }
+  } catch (err) {
+    console.error("Error in content initialization:", err);
+  } finally {
+    isLoaded = true;
+    // Dispatch event for initial load
+    window.dispatchEvent(new CustomEvent(CONTENT_UPDATED_EVENT, { detail: websiteContent }));
   }
-  return defaultContent;
 };
 
-// Initial state
-let websiteContent = getStoredContent();
+// Ensure content is initialized
+if (!isLoaded) {
+  initializeContent();
+}
 
 // Content management methods
 export const getContent = () => websiteContent;
 
 export const getPageContent = (page: keyof WebsiteContent) => websiteContent[page];
 
-export const updateContent = (newContent: WebsiteContent) => {
+export const updateContent = async (newContent: WebsiteContent) => {
   websiteContent = newContent;
-  localStorage.setItem('websiteContent', JSON.stringify(websiteContent));
+  
+  try {
+    // Update Supabase
+    const { error } = await supabase
+      .from('website_content')
+      .update({ content: newContent })
+      .eq('id', 1);
+
+    if (error) {
+      console.error("Error updating content in Supabase:", error);
+      // Store in localStorage as fallback
+      localStorage.setItem('websiteContent', JSON.stringify(newContent));
+    }
+  } catch (err) {
+    console.error("Error in content update:", err);
+    // Store in localStorage as fallback
+    localStorage.setItem('websiteContent', JSON.stringify(newContent));
+  }
   
   // Dispatch a custom event to notify all components of content change
-  window.dispatchEvent(new CustomEvent(CONTENT_UPDATED_EVENT, { detail: websiteContent }));
+  window.dispatchEvent(new CustomEvent(CONTENT_UPDATED_EVENT, { detail: newContent }));
   
-  return websiteContent;
+  return newContent;
 };
 
-export const resetContent = () => {
+export const resetContent = async () => {
   websiteContent = defaultContent;
-  localStorage.setItem('websiteContent', JSON.stringify(websiteContent));
+  
+  try {
+    // Update Supabase
+    const { error } = await supabase
+      .from('website_content')
+      .update({ content: defaultContent })
+      .eq('id', 1);
+    
+    if (error) {
+      console.error("Error resetting content in Supabase:", error);
+      // Store in localStorage as fallback
+      localStorage.setItem('websiteContent', JSON.stringify(defaultContent));
+    }
+  } catch (err) {
+    console.error("Error in content reset:", err);
+    // Store in localStorage as fallback
+    localStorage.setItem('websiteContent', JSON.stringify(defaultContent));
+  }
   
   // Dispatch event for content reset too
-  window.dispatchEvent(new CustomEvent(CONTENT_UPDATED_EVENT, { detail: websiteContent }));
+  window.dispatchEvent(new CustomEvent(CONTENT_UPDATED_EVENT, { detail: defaultContent }));
   
-  return websiteContent;
+  return defaultContent;
 };

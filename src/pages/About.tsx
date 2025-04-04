@@ -3,12 +3,29 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { getPageContent, CONTENT_UPDATED_EVENT } from "@/lib/contentStore";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getPageContent, CONTENT_UPDATED_EVENT, initializeContent } from "@/lib/contentStore";
 
 const About = () => {
   const [content, setContent] = useState(getPageContent("about"));
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
+    // Initialize content from Supabase
+    const loadContent = async () => {
+      try {
+        setIsLoading(true);
+        await initializeContent();
+        setContent(getPageContent("about"));
+      } catch (error) {
+        console.error("Error loading content:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadContent();
+    
     // Listen for content updates
     const handleContentUpdate = () => {
       setContent(getPageContent("about"));
@@ -21,6 +38,26 @@ const About = () => {
       window.removeEventListener(CONTENT_UPDATED_EVENT, handleContentUpdate);
     };
   }, []);
+  
+  // Show loading skeleton while content is being fetched
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <Navbar />
+        <div className="flex-grow container mx-auto px-4 pt-36 pb-16 relative">
+          <div className="max-w-4xl mx-auto relative z-10">
+            <Skeleton className="h-12 w-3/4 mb-8" />
+            <div className="space-y-4">
+              <Skeleton className="h-6 w-full" />
+              <Skeleton className="h-6 w-full" />
+              <Skeleton className="h-6 w-full" />
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen flex flex-col bg-background">

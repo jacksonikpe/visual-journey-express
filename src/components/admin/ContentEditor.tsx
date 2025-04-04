@@ -4,8 +4,10 @@ import {
   WebsiteContent, 
   getContent, 
   updateContent, 
-  resetContent 
+  resetContent,
+  initializeContent
 } from "@/lib/contentStore";
+import { supabase } from "@/lib/supabase";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,11 +15,54 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
-import { RotateCcw, Save } from "lucide-react";
+import { RotateCcw, Save, Database, Loader2 } from "lucide-react";
 
 export const ContentEditor = () => {
   const [content, setContent] = useState<WebsiteContent>(getContent());
   const [isDirty, setIsDirty] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [supabaseStatus, setSupabaseStatus] = useState<'connecting' | 'connected' | 'error'>('connecting');
+
+  useEffect(() => {
+    // Check Supabase connection and initialize content
+    const checkSupabaseAndInit = async () => {
+      try {
+        setIsLoading(true);
+        // Test Supabase connection
+        const { data, error } = await supabase.from('website_content').select('count').limit(1);
+        
+        if (error) {
+          console.error("Supabase connection error:", error);
+          setSupabaseStatus('error');
+        } else {
+          setSupabaseStatus('connected');
+          // Initialize content from Supabase
+          await initializeContent();
+          // Update local state with the latest content
+          setContent(getContent());
+        }
+      } catch (err) {
+        console.error("Error checking Supabase status:", err);
+        setSupabaseStatus('error');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    checkSupabaseAndInit();
+    
+    // Set up listener for content updates
+    const handleContentUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent<WebsiteContent>;
+      setContent(customEvent.detail);
+      setIsDirty(false);
+    };
+    
+    window.addEventListener(CONTENT_UPDATED_EVENT, handleContentUpdate);
+    return () => {
+      window.removeEventListener(CONTENT_UPDATED_EVENT, handleContentUpdate);
+    };
+  }, []);
 
   // Handle content updates
   const handleTextChange = (
@@ -50,25 +95,49 @@ export const ContentEditor = () => {
   };
 
   // Save changes
-  const handleSave = () => {
-    updateContent(content);
-    setIsDirty(false);
-    toast({
-      title: "Success",
-      description: "Website content updated successfully",
-    });
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      await updateContent(content);
+      setIsDirty(false);
+      toast({
+        title: "Success",
+        description: "Website content updated successfully in Supabase",
+      });
+    } catch (error) {
+      console.error("Error saving content:", error);
+      toast({
+        title: "Error",
+        description: "Could not update content. Changes saved locally as fallback.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Reset to default
-  const handleReset = () => {
+  const handleReset = async () => {
     if (confirm("Are you sure you want to reset all content to default?")) {
-      const defaultContent = resetContent();
-      setContent(defaultContent);
-      setIsDirty(false);
-      toast({
-        title: "Reset Complete",
-        description: "Website content has been reset to default"
-      });
+      setIsLoading(true);
+      try {
+        const defaultContent = await resetContent();
+        setContent(defaultContent);
+        setIsDirty(false);
+        toast({
+          title: "Reset Complete",
+          description: "Website content has been reset to default"
+        });
+      } catch (error) {
+        console.error("Error resetting content:", error);
+        toast({
+          title: "Error",
+          description: "Could not reset content to defaults",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -134,10 +203,24 @@ export const ContentEditor = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Content Editor</CardTitle>
-        <CardDescription>
-          Edit the text content on your website pages
-        </CardDescription>
+        <div className="flex justify-between items-center">
+          <div>
+            <CardTitle>Content Editor</CardTitle>
+            <CardDescription>
+              Edit the text content on your website pages
+            </CardDescription>
+          </div>
+          <div className="flex items-center gap-2">
+            <Database size={16} className={supabaseStatus === 'connected' ? 'text-green-500' : 'text-red-500'} />
+            <span className={`text-sm ${supabaseStatus === 'connected' ? 'text-green-500' : 'text-red-500'}`}>
+              {supabaseStatus === 'connected' 
+                ? 'Connected to Supabase' 
+                : supabaseStatus === 'connecting' 
+                  ? 'Connecting...' 
+                  : 'Using local storage (Supabase error)'}
+            </span>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="home">
@@ -179,16 +262,17 @@ export const ContentEditor = () => {
           variant="outline" 
           onClick={handleReset}
           className="flex items-center gap-2"
+          disabled={isLoading}
         >
-          <RotateCcw size={16} />
+          {isLoading ? <Loader2 size={16} className="animate-spin" /> : <RotateCcw size={16} />}
           Reset to Default
         </Button>
         <Button 
           onClick={handleSave} 
-          disabled={!isDirty}
+          disabled={!isDirty || isLoading}
           className="flex items-center gap-2"
         >
-          <Save size={16} />
+          {isLoading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
           Save Changes
         </Button>
       </CardFooter>

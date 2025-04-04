@@ -5,13 +5,28 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getPageContent, CONTENT_UPDATED_EVENT } from "@/lib/contentStore";
+import { getPageContent, CONTENT_UPDATED_EVENT, initializeContent } from "@/lib/contentStore";
 
 const Index = () => {
   const [loadedImages, setLoadedImages] = useState<{ [key: string]: boolean }>({});
   const [content, setContent] = useState(getPageContent("home"));
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const loadContent = async () => {
+      try {
+        setIsLoading(true);
+        await initializeContent();
+        setContent(getPageContent("home"));
+      } catch (error) {
+        console.error("Error loading content:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadContent();
+    
     const handleContentUpdate = () => {
       setContent(getPageContent("home"));
     };
@@ -44,6 +59,26 @@ const Index = () => {
   };
 
   const ctaSection = content.ctaSection as Record<string, string>;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container mx-auto pt-36 pb-16 px-4">
+          <div className="space-y-4">
+            <Skeleton className="h-12 w-3/4 mx-auto" />
+            <Skeleton className="h-6 w-full mx-auto" />
+            <Skeleton className="h-6 w-full mx-auto" />
+            <div className="flex justify-center gap-4 mt-8">
+              <Skeleton className="h-10 w-32" />
+              <Skeleton className="h-10 w-32" />
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
