@@ -62,6 +62,20 @@ let isLoaded = false;
 // Initialize the content from Supabase once at startup
 export const initializeContent = async () => {
   try {
+    // Check if Supabase connection is available
+    if (!supabase) {
+      console.warn("Supabase client not initialized, using localStorage as fallback");
+      const stored = localStorage.getItem('websiteContent');
+      if (stored) {
+        try {
+          websiteContent = JSON.parse(stored);
+        } catch (e) {
+          console.error("Error parsing stored content:", e);
+        }
+      }
+      return;
+    }
+    
     const { data, error } = await supabase
       .from('website_content')
       .select('content')
@@ -90,6 +104,15 @@ export const initializeContent = async () => {
     }
   } catch (err) {
     console.error("Error in content initialization:", err);
+    // Try to load from localStorage as fallback
+    const stored = localStorage.getItem('websiteContent');
+    if (stored) {
+      try {
+        websiteContent = JSON.parse(stored);
+      } catch (e) {
+        console.error("Error parsing stored content:", e);
+      }
+    }
   } finally {
     isLoaded = true;
     // Dispatch event for initial load
@@ -111,15 +134,20 @@ export const updateContent = async (newContent: WebsiteContent) => {
   websiteContent = newContent;
   
   try {
-    // Update Supabase
-    const { error } = await supabase
-      .from('website_content')
-      .update({ content: newContent })
-      .eq('id', 1);
+    // Update Supabase if available
+    if (supabase) {
+      const { error } = await supabase
+        .from('website_content')
+        .update({ content: newContent })
+        .eq('id', 1);
 
-    if (error) {
-      console.error("Error updating content in Supabase:", error);
-      // Store in localStorage as fallback
+      if (error) {
+        console.error("Error updating content in Supabase:", error);
+        // Store in localStorage as fallback
+        localStorage.setItem('websiteContent', JSON.stringify(newContent));
+      }
+    } else {
+      // If Supabase is not available, use localStorage
       localStorage.setItem('websiteContent', JSON.stringify(newContent));
     }
   } catch (err) {
@@ -138,15 +166,20 @@ export const resetContent = async () => {
   websiteContent = defaultContent;
   
   try {
-    // Update Supabase
-    const { error } = await supabase
-      .from('website_content')
-      .update({ content: defaultContent })
-      .eq('id', 1);
-    
-    if (error) {
-      console.error("Error resetting content in Supabase:", error);
-      // Store in localStorage as fallback
+    // Update Supabase if available
+    if (supabase) {
+      const { error } = await supabase
+        .from('website_content')
+        .update({ content: defaultContent })
+        .eq('id', 1);
+      
+      if (error) {
+        console.error("Error resetting content in Supabase:", error);
+        // Store in localStorage as fallback
+        localStorage.setItem('websiteContent', JSON.stringify(defaultContent));
+      }
+    } else {
+      // If Supabase is not available, use localStorage
       localStorage.setItem('websiteContent', JSON.stringify(defaultContent));
     }
   } catch (err) {

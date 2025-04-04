@@ -5,7 +5,8 @@ import {
   getContent, 
   updateContent, 
   resetContent,
-  initializeContent
+  initializeContent,
+  CONTENT_UPDATED_EVENT
 } from "@/lib/contentStore";
 import { supabase } from "@/lib/supabase";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -28,19 +29,35 @@ export const ContentEditor = () => {
     const checkSupabaseAndInit = async () => {
       try {
         setIsLoading(true);
-        // Test Supabase connection
-        const { data, error } = await supabase.from('website_content').select('count').limit(1);
         
-        if (error) {
-          console.error("Supabase connection error:", error);
+        // Test if Supabase is available
+        if (!supabase) {
+          console.log("Supabase client not available, using localStorage");
           setSupabaseStatus('error');
-        } else {
-          setSupabaseStatus('connected');
-          // Initialize content from Supabase
           await initializeContent();
-          // Update local state with the latest content
           setContent(getContent());
+          return;
         }
+        
+        // Test Supabase connection
+        try {
+          const { data, error } = await supabase.from('website_content').select('count').limit(1);
+          
+          if (error) {
+            console.error("Supabase connection error:", error);
+            setSupabaseStatus('error');
+          } else {
+            setSupabaseStatus('connected');
+          }
+        } catch (err) {
+          console.error("Error checking Supabase:", err);
+          setSupabaseStatus('error');
+        }
+        
+        // Initialize content from Supabase or localStorage
+        await initializeContent();
+        // Update local state with the latest content
+        setContent(getContent());
       } catch (err) {
         console.error("Error checking Supabase status:", err);
         setSupabaseStatus('error');
@@ -100,10 +117,18 @@ export const ContentEditor = () => {
     try {
       await updateContent(content);
       setIsDirty(false);
-      toast({
-        title: "Success",
-        description: "Website content updated successfully in Supabase",
-      });
+      
+      if (supabaseStatus === 'connected') {
+        toast({
+          title: "Success",
+          description: "Website content updated successfully in Supabase",
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: "Website content saved locally (Supabase not connected)",
+        });
+      }
     } catch (error) {
       console.error("Error saving content:", error);
       toast({
@@ -217,7 +242,7 @@ export const ContentEditor = () => {
                 ? 'Connected to Supabase' 
                 : supabaseStatus === 'connecting' 
                   ? 'Connecting...' 
-                  : 'Using local storage (Supabase error)'}
+                  : 'Using local storage (Supabase not available)'}
             </span>
           </div>
         </div>
