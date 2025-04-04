@@ -13,11 +13,39 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
-import { RotateCcw, Save } from "lucide-react";
+import { RotateCcw, Save, RefreshCw } from "lucide-react";
+import { checkSupabaseConnection } from "@/lib/supabase";
 
 export const ContentEditor = () => {
-  const [content, setContent] = useState<WebsiteContent>(getContent());
+  const [content, setContent] = useState<WebsiteContent | null>(null);
   const [isDirty, setIsDirty] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSupabaseConnected, setIsSupabaseConnected] = useState(false);
+
+  useEffect(() => {
+    const loadContent = async () => {
+      setIsLoading(true);
+      const connected = await checkSupabaseConnection();
+      setIsSupabaseConnected(connected);
+      
+      try {
+        const loadedContent = await getContent();
+        setContent(loadedContent);
+      } catch (error) {
+        console.error("Failed to load content:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load content data",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadContent();
+  }, []);
 
   // Handle content updates
   const handleTextChange = (
@@ -26,8 +54,11 @@ export const ContentEditor = () => {
     value: string,
     nestedKey?: string
   ) => {
+    if (!content) return;
+    
     setIsDirty(true);
     setContent(prev => {
+      if (!prev) return null;
       const newContent = { ...prev };
       
       if (nestedKey) {
@@ -50,25 +81,51 @@ export const ContentEditor = () => {
   };
 
   // Save changes
-  const handleSave = () => {
-    updateContent(content);
-    setIsDirty(false);
-    toast({
-      title: "Success",
-      description: "Website content updated successfully",
-    });
+  const handleSave = async () => {
+    if (!content) return;
+    
+    setIsSaving(true);
+    try {
+      await updateContent(content);
+      setIsDirty(false);
+      toast({
+        title: "Success",
+        description: `Website content updated${isSupabaseConnected ? " and saved to database" : ""}`,
+      });
+    } catch (error) {
+      console.error("Failed to save content:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save content changes",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Reset to default
-  const handleReset = () => {
+  const handleReset = async () => {
     if (confirm("Are you sure you want to reset all content to default?")) {
-      const defaultContent = resetContent();
-      setContent(defaultContent);
-      setIsDirty(false);
-      toast({
-        title: "Reset Complete",
-        description: "Website content has been reset to default"
-      });
+      setIsSaving(true);
+      try {
+        const defaultContent = await resetContent();
+        setContent(defaultContent);
+        setIsDirty(false);
+        toast({
+          title: "Reset Complete",
+          description: "Website content has been reset to default"
+        });
+      } catch (error) {
+        console.error("Failed to reset content:", error);
+        toast({
+          title: "Error",
+          description: "Failed to reset content",
+          variant: "destructive",
+        });
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
@@ -79,6 +136,7 @@ export const ContentEditor = () => {
     label: string,
     isTextarea = false
   ) => {
+    if (!content) return null;
     const value = content[page][key] as string;
     
     return (
@@ -108,6 +166,7 @@ export const ContentEditor = () => {
     key: string,
     label: string
   ) => {
+    if (!content) return null;
     const nestedObj = content[page][key] as Record<string, string>;
     
     return (
@@ -131,12 +190,37 @@ export const ContentEditor = () => {
     );
   };
 
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="pt-6 flex justify-center items-center h-40">
+          <RefreshCw className="animate-spin h-8 w-8 text-primary" />
+          <span className="ml-2">Loading content...</span>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!content) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <div className="text-center text-destructive">
+            Failed to load content data. Please refresh the page.
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Content Editor</CardTitle>
         <CardDescription>
-          Edit the text content on your website pages
+          {isSupabaseConnected 
+            ? "Edit the website content - changes will be saved to database" 
+            : "Edit the website content - changes will be saved locally"}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -179,16 +263,17 @@ export const ContentEditor = () => {
           variant="outline" 
           onClick={handleReset}
           className="flex items-center gap-2"
+          disabled={isSaving}
         >
-          <RotateCcw size={16} />
+          <RotateCcw size={16} className={isSaving ? "animate-spin" : ""} />
           Reset to Default
         </Button>
         <Button 
           onClick={handleSave} 
-          disabled={!isDirty}
+          disabled={!isDirty || isSaving}
           className="flex items-center gap-2"
         >
-          <Save size={16} />
+          <Save size={16} className={isSaving ? "animate-spin" : ""} />
           Save Changes
         </Button>
       </CardFooter>

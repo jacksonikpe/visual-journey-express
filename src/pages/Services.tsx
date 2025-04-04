@@ -4,12 +4,29 @@ import { useState, useEffect } from "react";
 import { Camera, Film, Video, Clapperboard, Briefcase } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { getPageContent, CONTENT_UPDATED_EVENT } from "@/lib/contentStore";
+import { getPageContent, getContent, CONTENT_UPDATED_EVENT } from "@/lib/contentStore";
 
 const Services = () => {
+  // Initialize with synchronous content for immediate rendering
   const [content, setContent] = useState(getPageContent("services"));
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
+    // Fetch the latest content from Supabase/localStorage
+    const fetchContent = async () => {
+      setIsLoading(true);
+      try {
+        const allContent = await getContent();
+        setContent(allContent.services);
+      } catch (error) {
+        console.error("Error loading content:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchContent();
+    
     // Listen for content updates
     const handleContentUpdate = () => {
       setContent(getPageContent("services"));

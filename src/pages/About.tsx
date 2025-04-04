@@ -3,12 +3,29 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { getPageContent, CONTENT_UPDATED_EVENT } from "@/lib/contentStore";
+import { getPageContent, getContent, CONTENT_UPDATED_EVENT } from "@/lib/contentStore";
 
 const About = () => {
+  // Initialize with synchronous content for immediate rendering
   const [content, setContent] = useState(getPageContent("about"));
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
+    // Fetch the latest content from Supabase/localStorage
+    const fetchContent = async () => {
+      setIsLoading(true);
+      try {
+        const allContent = await getContent();
+        setContent(allContent.about);
+      } catch (error) {
+        console.error("Error loading content:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchContent();
+    
     // Listen for content updates
     const handleContentUpdate = () => {
       setContent(getPageContent("about"));

@@ -1,5 +1,7 @@
 // Simple client-side CMS to store editable content
-// In a production app, this would be backed by a database
+// Uses Supabase as primary storage with localStorage fallback
+
+import { supabase } from './supabase';
 
 // Define content structure
 export type PageContent = {
@@ -54,44 +56,112 @@ const defaultContent: WebsiteContent = {
   }
 };
 
-// Get content from localStorage or use default
-const getStoredContent = (): WebsiteContent => {
+// Get content from Supabase or localStorage or use default
+export const getContent = async (): Promise<WebsiteContent> => {
+  try {
+    // Try to get from Supabase first
+    const { data, error } = await supabase
+      .from('website_content')
+      .select('content')
+      .single();
+    
+    if (!error && data && data.content) {
+      return data.content as WebsiteContent;
+    }
+    
+    // If Supabase fails, try localStorage
+    const stored = localStorage.getItem('websiteContent');
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch (e) {
+        console.error("Error parsing stored content:", e);
+      }
+    }
+  } catch (e) {
+    console.error("Error fetching content:", e);
+  }
+  
+  // Fallback to default content
+  return defaultContent;
+};
+
+// Get content from localStorage (sync version - for immediate rendering)
+export const getContentSync = (): WebsiteContent => {
   const stored = localStorage.getItem('websiteContent');
   if (stored) {
     try {
       return JSON.parse(stored);
     } catch (e) {
       console.error("Error parsing stored content:", e);
-      return defaultContent;
     }
   }
   return defaultContent;
 };
 
-// Initial state
-let websiteContent = getStoredContent();
-
-// Content management methods
-export const getContent = () => websiteContent;
-
-export const getPageContent = (page: keyof WebsiteContent) => websiteContent[page];
-
-export const updateContent = (newContent: WebsiteContent) => {
-  websiteContent = newContent;
-  localStorage.setItem('websiteContent', JSON.stringify(websiteContent));
-  
-  // Dispatch a custom event to notify all components of content change
-  window.dispatchEvent(new CustomEvent(CONTENT_UPDATED_EVENT, { detail: websiteContent }));
-  
-  return websiteContent;
+// Get specific page content
+export const getPageContent = (page: keyof WebsiteContent): PageContent => {
+  const content = getContentSync();
+  return content[page];
 };
 
-export const resetContent = () => {
-  websiteContent = defaultContent;
-  localStorage.setItem('websiteContent', JSON.stringify(websiteContent));
+// Update content in both Supabase and localStorage
+export const updateContent = async (newContent: WebsiteContent): Promise<WebsiteContent> => {
+  // Update localStorage for immediate access
+  localStorage.setItem('websiteContent', JSON.stringify(newContent));
+  
+  // Update Supabase in background
+  try {
+    const { data, error } = await supabase
+      .from('website_content')
+      .select('id')
+      .single();
+    
+    if (error && error.code === 'PGRST116') {
+      // Record doesn't exist, insert it
+      await supabase
+        .from('website_content')
+        .insert({ content: newContent });
+    } else {
+      // Record exists, update it
+      await supabase
+        .from('website_content')
+        .update({ content: newContent })
+        .eq('id', data?.id);
+    }
+  } catch (e) {
+    console.error("Error saving to Supabase:", e);
+  }
+  
+  // Dispatch a custom event to notify all components of content change
+  window.dispatchEvent(new CustomEvent(CONTENT_UPDATED_EVENT, { detail: newContent }));
+  
+  return newContent;
+};
+
+// Reset content to default
+export const resetContent = async (): Promise<WebsiteContent> => {
+  // Reset both localStorage and Supabase
+  localStorage.setItem('websiteContent', JSON.stringify(defaultContent));
+  
+  try {
+    const { data } = await supabase
+      .from('website_content')
+      .select('id')
+      .single();
+    
+    if (data?.id) {
+      await supabase
+        .from('website_content')
+        .update({ content: defaultContent })
+        .eq('id', data.id);
+    }
+  } catch (e) {
+    console.error("Error resetting Supabase content:", e);
+  }
   
   // Dispatch event for content reset too
-  window.dispatchEvent(new CustomEvent(CONTENT_UPDATED_EVENT, { detail: websiteContent }));
+  window.dispatchEvent(new CustomEvent(CONTENT_UPDATED_EVENT, { detail: defaultContent }));
   
-  return websiteContent;
+  return defaultContent;
 };
