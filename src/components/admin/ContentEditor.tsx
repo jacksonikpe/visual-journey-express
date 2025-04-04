@@ -4,11 +4,8 @@ import {
   WebsiteContent, 
   getContent, 
   updateContent, 
-  resetContent,
-  initializeContent,
-  CONTENT_UPDATED_EVENT
+  resetContent 
 } from "@/lib/contentStore";
-import { supabase } from "@/lib/supabase";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,70 +13,11 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
-import { RotateCcw, Save, Database, Loader2 } from "lucide-react";
+import { RotateCcw, Save } from "lucide-react";
 
 export const ContentEditor = () => {
   const [content, setContent] = useState<WebsiteContent>(getContent());
   const [isDirty, setIsDirty] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [supabaseStatus, setSupabaseStatus] = useState<'connecting' | 'connected' | 'error'>('connecting');
-
-  useEffect(() => {
-    // Check Supabase connection and initialize content
-    const checkSupabaseAndInit = async () => {
-      try {
-        setIsLoading(true);
-        
-        // Test if Supabase is available
-        if (!supabase) {
-          console.log("Supabase client not available, using localStorage");
-          setSupabaseStatus('error');
-          await initializeContent();
-          setContent(getContent());
-          return;
-        }
-        
-        // Test Supabase connection
-        try {
-          const { data, error } = await supabase.from('website_content').select('count').limit(1);
-          
-          if (error) {
-            console.error("Supabase connection error:", error);
-            setSupabaseStatus('error');
-          } else {
-            setSupabaseStatus('connected');
-          }
-        } catch (err) {
-          console.error("Error checking Supabase:", err);
-          setSupabaseStatus('error');
-        }
-        
-        // Initialize content from Supabase or localStorage
-        await initializeContent();
-        // Update local state with the latest content
-        setContent(getContent());
-      } catch (err) {
-        console.error("Error checking Supabase status:", err);
-        setSupabaseStatus('error');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    checkSupabaseAndInit();
-    
-    // Set up listener for content updates
-    const handleContentUpdate = (event: Event) => {
-      const customEvent = event as CustomEvent<WebsiteContent>;
-      setContent(customEvent.detail);
-      setIsDirty(false);
-    };
-    
-    window.addEventListener(CONTENT_UPDATED_EVENT, handleContentUpdate);
-    return () => {
-      window.removeEventListener(CONTENT_UPDATED_EVENT, handleContentUpdate);
-    };
-  }, []);
 
   // Handle content updates
   const handleTextChange = (
@@ -112,57 +50,25 @@ export const ContentEditor = () => {
   };
 
   // Save changes
-  const handleSave = async () => {
-    setIsLoading(true);
-    try {
-      await updateContent(content);
-      setIsDirty(false);
-      
-      if (supabaseStatus === 'connected') {
-        toast({
-          title: "Success",
-          description: "Website content updated successfully in Supabase",
-        });
-      } else {
-        toast({
-          title: "Success",
-          description: "Website content saved locally (Supabase not connected)",
-        });
-      }
-    } catch (error) {
-      console.error("Error saving content:", error);
-      toast({
-        title: "Error",
-        description: "Could not update content. Changes saved locally as fallback.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSave = () => {
+    updateContent(content);
+    setIsDirty(false);
+    toast({
+      title: "Success",
+      description: "Website content updated successfully",
+    });
   };
 
   // Reset to default
-  const handleReset = async () => {
+  const handleReset = () => {
     if (confirm("Are you sure you want to reset all content to default?")) {
-      setIsLoading(true);
-      try {
-        const defaultContent = await resetContent();
-        setContent(defaultContent);
-        setIsDirty(false);
-        toast({
-          title: "Reset Complete",
-          description: "Website content has been reset to default"
-        });
-      } catch (error) {
-        console.error("Error resetting content:", error);
-        toast({
-          title: "Error",
-          description: "Could not reset content to defaults",
-          variant: "destructive"
-        });
-      } finally {
-        setIsLoading(false);
-      }
+      const defaultContent = resetContent();
+      setContent(defaultContent);
+      setIsDirty(false);
+      toast({
+        title: "Reset Complete",
+        description: "Website content has been reset to default"
+      });
     }
   };
 
@@ -228,24 +134,10 @@ export const ContentEditor = () => {
   return (
     <Card>
       <CardHeader>
-        <div className="flex justify-between items-center">
-          <div>
-            <CardTitle>Content Editor</CardTitle>
-            <CardDescription>
-              Edit the text content on your website pages
-            </CardDescription>
-          </div>
-          <div className="flex items-center gap-2">
-            <Database size={16} className={supabaseStatus === 'connected' ? 'text-green-500' : 'text-red-500'} />
-            <span className={`text-sm ${supabaseStatus === 'connected' ? 'text-green-500' : 'text-red-500'}`}>
-              {supabaseStatus === 'connected' 
-                ? 'Connected to Supabase' 
-                : supabaseStatus === 'connecting' 
-                  ? 'Connecting...' 
-                  : 'Using local storage (Supabase not available)'}
-            </span>
-          </div>
-        </div>
+        <CardTitle>Content Editor</CardTitle>
+        <CardDescription>
+          Edit the text content on your website pages
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="home">
@@ -287,17 +179,16 @@ export const ContentEditor = () => {
           variant="outline" 
           onClick={handleReset}
           className="flex items-center gap-2"
-          disabled={isLoading}
         >
-          {isLoading ? <Loader2 size={16} className="animate-spin" /> : <RotateCcw size={16} />}
+          <RotateCcw size={16} />
           Reset to Default
         </Button>
         <Button 
           onClick={handleSave} 
-          disabled={!isDirty || isLoading}
+          disabled={!isDirty}
           className="flex items-center gap-2"
         >
-          {isLoading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+          <Save size={16} />
           Save Changes
         </Button>
       </CardFooter>

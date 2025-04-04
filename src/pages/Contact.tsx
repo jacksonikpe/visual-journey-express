@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import {
@@ -16,8 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import emailjs from "@emailjs/browser";
 import { useToast } from "../hooks/use-toast";
-import { Skeleton } from "@/components/ui/skeleton";
-import { getPageContent, CONTENT_UPDATED_EVENT, initializeContent } from "@/lib/contentStore";
+import { getPageContent, CONTENT_UPDATED_EVENT } from "@/lib/contentStore";
 
 const contactFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -30,24 +28,8 @@ type ContactFormData = z.infer<typeof contactFormSchema>;
 const Contact = () => {
   const { toast } = useToast();
   const [content, setContent] = useState(getPageContent("contact"));
-  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    // Initialize content from Supabase
-    const loadContent = async () => {
-      try {
-        setIsLoading(true);
-        await initializeContent();
-        setContent(getPageContent("contact"));
-      } catch (error) {
-        console.error("Error loading content:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    loadContent();
-    
     const handleContentUpdate = () => {
       setContent(getPageContent("contact"));
     };
@@ -58,6 +40,8 @@ const Contact = () => {
       window.removeEventListener(CONTENT_UPDATED_EVENT, handleContentUpdate);
     };
   }, []);
+  
+  const contactInfo = content.contactInfo as Record<string, string>;
   
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactFormSchema),
@@ -83,27 +67,6 @@ const Contact = () => {
       });
     }
   };
-  
-  // Show loading skeleton while content is being fetched
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="container mx-auto px-4 py-36">
-          <div className="max-w-4xl mx-auto relative z-10">
-            <Skeleton className="h-12 w-60 mx-auto mb-8" />
-            <div className="grid md:grid-cols-2 gap-12">
-              <Skeleton className="h-80 w-full rounded-lg" />
-              <Skeleton className="h-80 w-full rounded-lg" />
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
-  
-  const contactInfo = content.contactInfo as Record<string, string>;
 
   return (
     <div className="min-h-screen bg-background">

@@ -4,29 +4,12 @@ import { useState, useEffect } from "react";
 import { Camera, Film, Video, Clapperboard, Briefcase } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { Skeleton } from "@/components/ui/skeleton";
-import { getPageContent, CONTENT_UPDATED_EVENT, initializeContent } from "@/lib/contentStore";
+import { getPageContent, CONTENT_UPDATED_EVENT } from "@/lib/contentStore";
 
 const Services = () => {
   const [content, setContent] = useState(getPageContent("services"));
-  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    // Initialize content from Supabase
-    const loadContent = async () => {
-      try {
-        setIsLoading(true);
-        await initializeContent();
-        setContent(getPageContent("services"));
-      } catch (error) {
-        console.error("Error loading content:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    loadContent();
-    
     // Listen for content updates
     const handleContentUpdate = () => {
       setContent(getPageContent("services"));
@@ -39,28 +22,6 @@ const Services = () => {
       window.removeEventListener(CONTENT_UPDATED_EVENT, handleContentUpdate);
     };
   }, []);
-  
-  // Show loading skeleton while content is being fetched
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex flex-col bg-background">
-        <Navbar />
-        <div className="flex-grow container mx-auto px-4 pt-36 pb-16">
-          <div className="relative">
-            <div className="relative z-10">
-              <Skeleton className="h-12 w-60 mb-8" />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <Skeleton key={index} className="h-40 w-full rounded-lg" />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
   
   const servicesList = content.servicesList as Record<string, string>;
   
