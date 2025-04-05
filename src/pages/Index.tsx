@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
@@ -62,6 +63,26 @@ const Index = () => {
 
   const ctaSection = content.ctaSection as Record<string, string>;
 
+  // Function to apply text-primary class to the last two words
+  const formatHeroTitle = (title: string) => {
+    if (!title) return "";
+    const words = title.split(" ");
+    
+    if (words.length <= 2) {
+      return <span className="text-primary">{title}</span>;
+    }
+    
+    const regularWords = words.slice(0, -2).join(" ");
+    const highlightedWords = words.slice(-2).join(" ");
+    
+    return (
+      <>
+        {regularWords}{" "}
+        <span className="text-primary">{highlightedWords}</span>
+      </>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -86,7 +107,7 @@ const Index = () => {
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="hero-title animate-fade-down">
-                {content.heroTitle as string}
+                {formatHeroTitle(content.heroTitle as string)}
               </h1>
               <p className="mt-6 text-lg md:text-xl animate-fade-up text-[#364354]">
                 {content.heroDescription as string}
