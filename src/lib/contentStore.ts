@@ -1,6 +1,7 @@
 
 // Website content management using Supabase as primary storage with localStorage fallback
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 
 // Define content structure
 export type PageContent = {
@@ -120,12 +121,12 @@ export const updateContent = async (newContent: WebsiteContent): Promise<Website
       // Record doesn't exist, insert it
       await supabase
         .from('website_content')
-        .insert({ content: newContent });
+        .insert({ content: newContent as unknown as Json });
     } else if (data) {
       // Record exists, update it
       await supabase
         .from('website_content')
-        .update({ content: newContent })
+        .update({ content: newContent as unknown as Json })
         .eq('id', data.id);
     }
   } catch (e) {
@@ -152,7 +153,7 @@ export const resetContent = async (): Promise<WebsiteContent> => {
     if (data?.id) {
       await supabase
         .from('website_content')
-        .update({ content: defaultContent })
+        .update({ content: defaultContent as unknown as Json })
         .eq('id', data.id);
     }
   } catch (e) {
