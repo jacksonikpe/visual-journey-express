@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
@@ -5,13 +6,30 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getPageContent, CONTENT_UPDATED_EVENT } from "@/lib/contentStore";
+import { getPageContent, getContent, CONTENT_UPDATED_EVENT } from "@/lib/contentStore";
 
 const Index = () => {
   const [loadedImages, setLoadedImages] = useState<{ [key: string]: boolean }>({});
   const [content, setContent] = useState(getPageContent("home"));
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Fetch the latest content from Supabase/localStorage
+    const fetchContent = async () => {
+      setIsLoading(true);
+      try {
+        const allContent = await getContent();
+        setContent(allContent.home);
+      } catch (error) {
+        console.error("Error loading content:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchContent();
+    
+    // Listen for content updates
     const handleContentUpdate = () => {
       setContent(getPageContent("home"));
     };
