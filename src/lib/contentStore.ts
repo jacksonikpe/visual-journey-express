@@ -1,7 +1,6 @@
-// Simple client-side CMS to store editable content
-// Uses Supabase as primary storage with localStorage fallback
 
-import { supabase } from './supabase';
+// Website content management using Supabase as primary storage with localStorage fallback
+import { supabase } from '@/integrations/supabase/client';
 
 // Define content structure
 export type PageContent = {
@@ -30,7 +29,7 @@ const defaultContent: WebsiteContent = {
   },
   about: {
     mainTitle: "Our Story",
-    introduction: "With over a decade of experience in visual storytelling, we've dedicated ourselves to capturing life's most precious moments and transforming them into timeless pieces of art.",
+    introduction: "With over a decade of experience in visual storytelling, we have dedicated ourselves to capturing life most precious moments and transforming them into timeless pieces of art.",
     missionTitle: "Our Mission",
     missionDescription: "We believe in the power of visual storytelling to move, inspire, and connect people. Our mission is to create compelling visual narratives that resonate with audiences and leave lasting impressions.",
     vision: "To be the leading creative force in visual storytelling, pushing boundaries and setting new standards in videography and photography.",
@@ -122,12 +121,12 @@ export const updateContent = async (newContent: WebsiteContent): Promise<Website
       await supabase
         .from('website_content')
         .insert({ content: newContent });
-    } else {
+    } else if (data) {
       // Record exists, update it
       await supabase
         .from('website_content')
         .update({ content: newContent })
-        .eq('id', data?.id);
+        .eq('id', data.id);
     }
   } catch (e) {
     console.error("Error saving to Supabase:", e);
