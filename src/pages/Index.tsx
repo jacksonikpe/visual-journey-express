@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
@@ -87,8 +86,7 @@ const Index = () => {
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="hero-title animate-fade-down">
-                {content.heroTitle as string}{" "}
-                <span className="text-primary">Timeless Visuals</span>
+                {content.heroTitle as string}
               </h1>
               <p className="mt-6 text-lg md:text-xl animate-fade-up text-[#364354]">
                 {content.heroDescription as string}
