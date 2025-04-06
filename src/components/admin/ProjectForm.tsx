@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+
+import { useState, useRef, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import {
   Card,
@@ -21,7 +22,7 @@ import { Image as LucideImage, Upload, Save, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { supabase } from "@/lib/supabase";
+import { supabase, initializeStorage } from "@/lib/supabase";
 
 // Form validation schema
 const formSchema = z.object({
@@ -51,6 +52,18 @@ export const ProjectForm = ({
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Initialize storage when component mounts
+  useEffect(() => {
+    initializeStorage().catch(err => {
+      console.error("Failed to initialize storage:", err);
+      toast({
+        title: "Storage Error",
+        description: "Failed to initialize storage. Please try again.",
+        variant: "destructive",
+      });
+    });
+  }, []);
+
   const defaultValues = project
     ? {
         ...project,
@@ -76,7 +89,7 @@ export const ProjectForm = ({
     defaultValues,
   });
 
-  const compressImage = async (file: File, maxWidth = 1920, quality = 0.8): Promise<Blob> => {
+  const compressImage = async (file: File, maxWidth = 1920, quality = 0.9): Promise<Blob> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -86,8 +99,8 @@ export const ProjectForm = ({
         img.onload = () => {
           const canvas = document.createElement('canvas');
           const scale = maxWidth / img.width;
-          const newWidth = img.width * scale;
-          const newHeight = img.height * scale;
+          const newWidth = Math.min(maxWidth, img.width);
+          const newHeight = scale * img.height;
           
           canvas.width = newWidth;
           canvas.height = newHeight;
@@ -109,7 +122,7 @@ export const ProjectForm = ({
               }
             },
             'image/jpeg',
-            quality
+            quality // Higher quality for Supabase storage
           );
         };
       };
@@ -129,33 +142,45 @@ export const ProjectForm = ({
     try {
       const compressedImage = await compressImage(file);
       
-      const formData = new FormData();
-      formData.append("file", compressedImage, file.name);
-      formData.append("upload_preset", "portfolio_uploads");
-
-      const response = await fetch(
-        "https://api.cloudinary.com/v1_1/didwhe7rc/image/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      const data = await response.json();
-
-      if (data.secure_url) {
-        setImage(data.secure_url);
-        toast({
-          title: "Success",
-          description: "Image uploaded and compressed successfully",
+      // Generate a unique filename with timestamp and original extension
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+      const filePath = `${fileName}`;
+      
+      // Upload to Supabase Storage
+      const { data, error } = await supabase
+        .storage
+        .from('project-images')
+        .upload(filePath, compressedImage, {
+          contentType: 'image/jpeg',
+          cacheControl: '3600',
+          upsert: false
         });
-      } else {
-        throw new Error("Upload failed");
+        
+      if (error) {
+        throw error;
       }
+      
+      // Get the public URL
+      const { data: publicUrlData } = supabase
+        .storage
+        .from('project-images')
+        .getPublicUrl(filePath);
+        
+      if (!publicUrlData?.publicUrl) {
+        throw new Error("Failed to get public URL");
+      }
+      
+      setImage(publicUrlData.publicUrl);
+      toast({
+        title: "Success",
+        description: "Image uploaded successfully",
+      });
     } catch (error) {
+      console.error("Error uploading image:", error);
       toast({
         title: "Error",
-        description: "Failed to upload image",
+        description: "Failed to upload image. Please try again.",
         variant: "destructive",
       });
     } finally {
