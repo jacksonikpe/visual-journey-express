@@ -209,7 +209,6 @@ export const ProjectForm = ({
       description: values.description,
       span: values.span,
       image,
-      story: "",
       details: {
         location: values["details.location"],
         year: values["details.year"],
