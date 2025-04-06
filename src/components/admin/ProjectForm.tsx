@@ -125,6 +125,7 @@ export const ProjectForm = ({
             quality // Higher quality for Supabase storage
           );
         };
+        img.onerror = () => reject(new Error('Image loading error'));
       };
       reader.onerror = (error) => reject(error);
     });
@@ -140,6 +141,12 @@ export const ProjectForm = ({
     setUploading(true);
 
     try {
+      console.log("Starting upload process...");
+      // Check if the file is an image
+      if (!file.type.startsWith('image/')) {
+        throw new Error('Only image files are allowed');
+      }
+
       const compressedImage = await compressImage(file);
       
       // Generate a unique filename with timestamp and original extension
@@ -147,19 +154,25 @@ export const ProjectForm = ({
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
       const filePath = `${fileName}`;
       
+      console.log("Uploading to Supabase Storage...");
+      console.log("Bucket: project-images, File path:", filePath);
+
       // Upload to Supabase Storage
       const { data, error } = await supabase
         .storage
         .from('project-images')
         .upload(filePath, compressedImage, {
-          contentType: 'image/jpeg',
+          contentType: file.type,
           cacheControl: '3600',
           upsert: false
         });
         
       if (error) {
+        console.error("Upload error:", error);
         throw error;
       }
+      
+      console.log("Upload successful, getting public URL");
       
       // Get the public URL
       const { data: publicUrlData } = supabase
@@ -171,7 +184,9 @@ export const ProjectForm = ({
         throw new Error("Failed to get public URL");
       }
       
+      console.log("Public URL obtained:", publicUrlData.publicUrl);
       setImage(publicUrlData.publicUrl);
+      
       toast({
         title: "Success",
         description: "Image uploaded successfully",
@@ -179,8 +194,8 @@ export const ProjectForm = ({
     } catch (error) {
       console.error("Error uploading image:", error);
       toast({
-        title: "Error",
-        description: "Failed to upload image. Please try again.",
+        title: "Upload Error",
+        description: error instanceof Error ? error.message : "Failed to upload image. Please try again.",
         variant: "destructive",
       });
     } finally {
