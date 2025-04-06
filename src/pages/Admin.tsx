@@ -8,15 +8,16 @@ import Footer from "../components/Footer";
 import { ProjectForm } from "../components/admin/ProjectForm";
 import { ProjectList } from "../components/admin/ProjectList";
 import { ContentEditor } from "../components/admin/ContentEditor";
-import { projects } from "../components/portfolio/projectsData";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 const Admin = () => {
-  const [adminProjects, setAdminProjects] = useState(projects);
+  const [adminProjects, setAdminProjects] = useState<any[]>([]);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [editingProject, setEditingProject] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   // Simple verification check to ensure users don't access this page directly
@@ -39,6 +40,34 @@ const Admin = () => {
     }
   }, [navigate]);
 
+  // Fetch projects from Supabase
+  const fetchProjects = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      setAdminProjects(data || []);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load projects",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
   const handleAddNew = () => {
     setEditingProject(null);
     setIsAddingNew(true);
@@ -55,49 +84,19 @@ const Admin = () => {
   };
 
   const handleSave = (project: any) => {
-    try {
-      if (isAddingNew) {
-        // Add new project
-        setAdminProjects([...adminProjects, { ...project, id: Date.now() }]);
-        toast({
-          title: "Success",
-          description: "New project added successfully",
-        });
-      } else {
-        // Update existing project
-        setAdminProjects(
-          adminProjects.map((p) => (p.id === project.id ? project : p))
-        );
-        toast({
-          title: "Success",
-          description: "Project updated successfully",
-        });
-      }
-      setIsAddingNew(false);
-      setEditingProject(null);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to save project",
-        variant: "destructive",
-      });
-    }
+    fetchProjects(); // Refresh the list from the database
+    setIsAddingNew(false);
+    setEditingProject(null);
+    
+    toast({
+      title: "Success",
+      description: project.id ? "Project updated successfully" : "New project added successfully",
+    });
   };
 
-  const handleDelete = (id: number) => {
-    try {
-      setAdminProjects(adminProjects.filter((p) => p.id !== id));
-      toast({
-        title: "Success",
-        description: "Project deleted successfully",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete project",
-        variant: "destructive",
-      });
-    }
+  const handleDelete = (id: string) => {
+    setAdminProjects(adminProjects.filter((p) => p.id !== id));
+    // The actual deletion is handled in ProjectList component
   };
 
   return (
@@ -134,7 +133,12 @@ const Admin = () => {
                 )}
               </div>
 
-              {(isAddingNew || editingProject) ? (
+              {isLoading ? (
+                <div className="text-center py-10">
+                  <div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">Loading projects...</p>
+                </div>
+              ) : (isAddingNew || editingProject) ? (
                 <ProjectForm
                   project={editingProject}
                   onSave={handleSave}
@@ -145,6 +149,7 @@ const Admin = () => {
                   projects={adminProjects}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
+                  onRefresh={fetchProjects}
                 />
               )}
             </TabsContent>

@@ -22,6 +22,7 @@ import { Image, Upload, Save, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { supabase } from "@/lib/supabase";
 
 // Form validation schema
 const formSchema = z.object({
@@ -76,6 +77,47 @@ export const ProjectForm = ({
     defaultValues,
   });
 
+  const compressImage = async (file: File, maxWidth = 1920, quality = 0.8): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const scale = maxWidth / img.width;
+          const newWidth = img.width * scale;
+          const newHeight = img.height * scale;
+          
+          canvas.width = newWidth;
+          canvas.height = newHeight;
+          
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            reject(new Error('Could not get canvas context'));
+            return;
+          }
+          
+          ctx.drawImage(img, 0, 0, newWidth, newHeight);
+          
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                resolve(blob);
+              } else {
+                reject(new Error('Canvas to Blob conversion failed'));
+              }
+            },
+            'image/jpeg',
+            quality
+          );
+        };
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
   const handleImageUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -86,9 +128,16 @@ export const ProjectForm = ({
     setUploading(true);
 
     try {
+      // Compress the image before uploading
+      const compressedImage = await compressImage(file);
+      const compressedFile = new File([compressedImage], file.name, { 
+        type: 'image/jpeg',
+        lastModified: new Date().getTime()
+      });
+      
       // Create a FormData object to send the file to Cloudinary
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", compressedFile);
       formData.append("upload_preset", "portfolio_uploads"); // Cloudinary upload preset (unsigned)
 
       // Upload to Cloudinary
@@ -106,7 +155,7 @@ export const ProjectForm = ({
         setImage(data.secure_url);
         toast({
           title: "Success",
-          description: "Image uploaded successfully",
+          description: "Image uploaded and compressed successfully",
         });
       } else {
         throw new Error("Upload failed");
@@ -122,7 +171,7 @@ export const ProjectForm = ({
     }
   };
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!image) {
       toast({
         title: "Error",
@@ -134,7 +183,7 @@ export const ProjectForm = ({
 
     // Transform form data back to project structure
     const projectData = {
-      id: project?.id || Date.now(),
+      id: project?.id || undefined, // Let Supabase generate UUID if new
       ...values,
       image,
       details: {
@@ -151,7 +200,34 @@ export const ProjectForm = ({
     delete projectData["details.year"];
     delete projectData["details.role"];
 
-    onSave(projectData);
+    try {
+      if (project?.id) {
+        // Update existing project in Supabase
+        const { error } = await supabase
+          .from('projects')
+          .update(projectData)
+          .eq('id', project.id);
+          
+        if (error) throw error;
+      } else {
+        // Insert new project into Supabase
+        const { error } = await supabase
+          .from('projects')
+          .insert(projectData);
+          
+        if (error) throw error;
+      }
+      
+      onSave(projectData);
+      
+    } catch (error) {
+      console.error("Supabase error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save project to database",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

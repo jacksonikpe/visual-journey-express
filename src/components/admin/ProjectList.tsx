@@ -1,4 +1,5 @@
 
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -19,23 +20,50 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { toast } from "@/hooks/use-toast";
 
 export const ProjectList = ({ 
   projects, 
   onEdit, 
-  onDelete 
+  onDelete,
+  onRefresh
 }: { 
   projects: any[],
   onEdit: (project: any) => void,
-  onDelete: (id: number) => void
+  onDelete: (id: string) => void,
+  onRefresh: () => void
 }) => {
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (selectedId !== null) {
-      onDelete(selectedId);
-      setSelectedId(null);
+      setIsDeleting(true);
+      try {
+        const { error } = await supabase
+          .from('projects')
+          .delete()
+          .eq('id', selectedId);
+        
+        if (error) throw error;
+        
+        onDelete(selectedId);
+        toast({
+          title: "Success",
+          description: "Project deleted successfully",
+        });
+      } catch (error) {
+        console.error("Error deleting project:", error);
+        toast({
+          title: "Error",
+          description: "Failed to delete project",
+          variant: "destructive",
+        });
+      } finally {
+        setIsDeleting(false);
+        setSelectedId(null);
+      }
     }
   };
 
@@ -91,6 +119,7 @@ export const ProjectList = ({
                             variant="destructive" 
                             size="sm"
                             onClick={() => setSelectedId(project.id)}
+                            disabled={isDeleting}
                           >
                             <Trash className="h-4 w-4 mr-1" />
                             Delete
@@ -108,8 +137,8 @@ export const ProjectList = ({
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleDelete}>
-                              Delete
+                            <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+                              {isDeleting ? "Deleting..." : "Delete"}
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
