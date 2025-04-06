@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { toast } from "@/hooks/use-toast";
 import {
@@ -131,15 +130,13 @@ export const ProjectForm = ({
     try {
       // Compress the image before uploading
       const compressedImage = await compressImage(file);
+      
       // Fixed: Create a File object from Blob correctly
-      const compressedFile = new File([compressedImage], file.name, { 
-        type: 'image/jpeg',
-        lastModified: new Date().getTime()
-      });
+      // Use Blob directly instead of creating a new File
       
       // Create a FormData object to send the file to Cloudinary
       const formData = new FormData();
-      formData.append("file", compressedFile);
+      formData.append("file", compressedImage, file.name); // Use blob directly with a filename
       formData.append("upload_preset", "portfolio_uploads"); // Cloudinary upload preset (unsigned)
 
       // Upload to Cloudinary
@@ -186,7 +183,11 @@ export const ProjectForm = ({
     // Transform form data back to project structure
     const projectData = {
       id: project?.id || undefined, // Let Supabase generate UUID if new
-      ...values,
+      title: values.title,
+      category: values.category, 
+      description: values.description,
+      story: values.story,
+      span: values.span,
       image,
       details: {
         duration: values["details.duration"],
@@ -197,10 +198,10 @@ export const ProjectForm = ({
     };
 
     // Remove the flattened details fields
-    delete projectData["details.duration"];
-    delete projectData["details.location"];
-    delete projectData["details.year"];
-    delete projectData["details.role"];
+    delete (projectData as any)["details.duration"];
+    delete (projectData as any)["details.location"];
+    delete (projectData as any)["details.year"];
+    delete (projectData as any)["details.role"];
 
     try {
       if (project?.id) {
