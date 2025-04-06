@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import {
@@ -123,9 +122,7 @@ export const ProjectForm = ({
     });
   };
 
-  const handleImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
@@ -212,6 +209,7 @@ export const ProjectForm = ({
       description: values.description,
       span: values.span,
       image,
+      story: "",
       details: {
         location: values["details.location"],
         year: values["details.year"],
@@ -302,7 +300,7 @@ export const ProjectForm = ({
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>title</FormLabel>
+                      <FormLabel>Title</FormLabel>
                       <FormControl>
                         <Input placeholder="Project title" {...field} />
                       </FormControl>
