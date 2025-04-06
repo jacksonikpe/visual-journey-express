@@ -3,7 +3,6 @@ import { toast } from "@/hooks/use-toast";
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -18,7 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Image, Upload, Save, X } from "lucide-react";
+import { Image as LucideImage, Upload, Save, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -82,7 +81,7 @@ export const ProjectForm = ({
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = (event) => {
-        const img = new Image();
+        const img = new window.Image();
         img.src = event.target?.result as string;
         img.onload = () => {
           const canvas = document.createElement('canvas');
@@ -128,18 +127,12 @@ export const ProjectForm = ({
     setUploading(true);
 
     try {
-      // Compress the image before uploading
       const compressedImage = await compressImage(file);
       
-      // Fixed: Create a File object from Blob correctly
-      // Use Blob directly instead of creating a new File
-      
-      // Create a FormData object to send the file to Cloudinary
       const formData = new FormData();
-      formData.append("file", compressedImage, file.name); // Use blob directly with a filename
-      formData.append("upload_preset", "portfolio_uploads"); // Cloudinary upload preset (unsigned)
+      formData.append("file", compressedImage, file.name);
+      formData.append("upload_preset", "portfolio_uploads");
 
-      // Upload to Cloudinary
       const response = await fetch(
         "https://api.cloudinary.com/v1_1/didwhe7rc/image/upload",
         {
@@ -180,9 +173,8 @@ export const ProjectForm = ({
       return;
     }
 
-    // Transform form data back to project structure
     const projectData = {
-      id: project?.id || undefined, // Let Supabase generate UUID if new
+      id: project?.id || undefined,
       title: values.title,
       category: values.category, 
       description: values.description,
@@ -197,7 +189,6 @@ export const ProjectForm = ({
       },
     };
 
-    // Remove the flattened details fields
     delete (projectData as any)["details.duration"];
     delete (projectData as any)["details.location"];
     delete (projectData as any)["details.year"];
@@ -205,7 +196,6 @@ export const ProjectForm = ({
 
     try {
       if (project?.id) {
-        // Update existing project in Supabase
         const { error } = await supabase
           .from('projects')
           .update(projectData)
@@ -213,7 +203,6 @@ export const ProjectForm = ({
           
         if (error) throw error;
       } else {
-        // Insert new project into Supabase
         const { error } = await supabase
           .from('projects')
           .insert(projectData);
@@ -242,7 +231,6 @@ export const ProjectForm = ({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-4">
-              {/* Image Upload Section */}
               <div className="flex flex-col gap-4">
                 <FormLabel>Project Image</FormLabel>
                 <div className="flex items-center gap-4">
@@ -259,7 +247,7 @@ export const ProjectForm = ({
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <Image className="text-muted-foreground" size={32} />
+                      <LucideImage className="text-muted-foreground" size={32} />
                     )}
                     <input
                       ref={fileInputRef}
@@ -281,7 +269,6 @@ export const ProjectForm = ({
                 </div>
               </div>
 
-              {/* Basic Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -311,7 +298,6 @@ export const ProjectForm = ({
                 />
               </div>
 
-              {/* Grid Layout */}
               <FormField
                 control={form.control}
                 name="span"
@@ -340,7 +326,6 @@ export const ProjectForm = ({
                 )}
               />
 
-              {/* Description & Story */}
               <FormField
                 control={form.control}
                 name="description"
@@ -377,7 +362,6 @@ export const ProjectForm = ({
                 )}
               />
 
-              {/* Project Details */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
