@@ -1,3 +1,4 @@
+
 import {
   Dialog,
   DialogContent,
@@ -12,10 +13,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
 
 interface ProjectDetails {
-  duration: string;
   location: string;
   year: string;
-  role: string;
 }
 
 interface ProjectProps {
@@ -23,7 +22,6 @@ interface ProjectProps {
   title: string;
   category: string;
   description: string;
-  story: string;
   details: ProjectDetails;
   image: string;
   span: string;
@@ -81,21 +79,7 @@ export const ProjectCard = ({ project }: { project: ProjectProps }) => {
             <p className="text-muted-foreground leading-relaxed">
               {project.description}
             </p>
-            <h4 className="text-lg font-semibold text-primary mt-4">
-              Behind the Scenes
-            </h4>
-            <p className="text-muted-foreground leading-relaxed">
-              {project.story}
-            </p>
             <div className="grid grid-cols-2 gap-4 mt-6">
-              <div>
-                <h5 className="text-sm font-semibold text-primary mb-1">
-                  Duration
-                </h5>
-                <p className="text-muted-foreground">
-                  {project.details.duration}
-                </p>
-              </div>
               <div>
                 <h5 className="text-sm font-semibold text-primary mb-1">
                   Location
@@ -109,12 +93,6 @@ export const ProjectCard = ({ project }: { project: ProjectProps }) => {
                   Year
                 </h5>
                 <p className="text-muted-foreground">{project.details.year}</p>
-              </div>
-              <div>
-                <h5 className="text-sm font-semibold text-primary mb-1">
-                  Role
-                </h5>
-                <p className="text-muted-foreground">{project.details.role}</p>
               </div>
             </div>
           </div>

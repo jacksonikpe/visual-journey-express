@@ -26,15 +26,12 @@ import { supabase, initializeStorage } from "@/lib/supabase";
 
 // Form validation schema
 const formSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
+  title: z.string(),
   category: z.string().min(1, { message: "Category is required" }),
-  description: z.string().min(1, { message: "Description is required" }),
-  story: z.string().min(1, { message: "Story is required" }),
+  description: z.string(),
   span: z.string().default("col-span-1 row-span-1"),
-  "details.duration": z.string().min(1, { message: "Duration is required" }),
-  "details.location": z.string().min(1, { message: "Location is required" }),
-  "details.year": z.string().min(1, { message: "Year is required" }),
-  "details.role": z.string().min(1, { message: "Role is required" }),
+  "details.location": z.string(),
+  "details.year": z.string(),
 });
 
 export const ProjectForm = ({
@@ -67,21 +64,16 @@ export const ProjectForm = ({
   const defaultValues = project
     ? {
         ...project,
-        "details.duration": project.details.duration,
         "details.location": project.details.location,
         "details.year": project.details.year,
-        "details.role": project.details.role,
       }
     : {
         title: "",
         category: "",
         description: "",
-        story: "",
         span: "col-span-1 row-span-1",
-        "details.duration": "",
         "details.location": "",
         "details.year": "",
-        "details.role": "",
       };
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -218,21 +210,16 @@ export const ProjectForm = ({
       title: values.title,
       category: values.category, 
       description: values.description,
-      story: values.story,
       span: values.span,
       image,
       details: {
-        duration: values["details.duration"],
         location: values["details.location"],
         year: values["details.year"],
-        role: values["details.role"],
       },
     };
 
-    delete (projectData as any)["details.duration"];
     delete (projectData as any)["details.location"];
     delete (projectData as any)["details.year"];
-    delete (projectData as any)["details.role"];
 
     try {
       if (project?.id) {
@@ -315,11 +302,10 @@ export const ProjectForm = ({
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title</FormLabel>
+                      <FormLabel>title</FormLabel>
                       <FormControl>
                         <Input placeholder="Project title" {...field} />
                       </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -361,7 +347,6 @@ export const ProjectForm = ({
                         </option>
                       </select>
                     </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -379,43 +364,11 @@ export const ProjectForm = ({
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="story"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Story</FormLabel>
-                    <FormControl>
-                      <textarea
-                        className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-base"
-                        placeholder="Behind the scenes story"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="details.duration"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Duration</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g. 3 days" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
                 <FormField
                   control={form.control}
                   name="details.location"
@@ -425,7 +378,6 @@ export const ProjectForm = ({
                       <FormControl>
                         <Input placeholder="e.g. New York, USA" {...field} />
                       </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -438,20 +390,6 @@ export const ProjectForm = ({
                       <FormControl>
                         <Input placeholder="e.g. 2023" {...field} />
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="details.role"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Role</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g. Cinematographer" {...field} />
-                      </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />

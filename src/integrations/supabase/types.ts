@@ -18,7 +18,6 @@ export type Database = {
           id: string
           image: string
           span: string | null
-          story: string
           title: string
           updated_at: string | null
         }
@@ -30,7 +29,6 @@ export type Database = {
           id?: string
           image: string
           span?: string | null
-          story: string
           title: string
           updated_at?: string | null
         }
@@ -42,7 +40,6 @@ export type Database = {
           id?: string
           image?: string
           span?: string | null
-          story?: string
           title?: string
           updated_at?: string | null
         }
