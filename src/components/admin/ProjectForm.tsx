@@ -1,3 +1,4 @@
+
 import { useState, useRef } from "react";
 import { toast } from "@/hooks/use-toast";
 import {
@@ -130,6 +131,7 @@ export const ProjectForm = ({
     try {
       // Compress the image before uploading
       const compressedImage = await compressImage(file);
+      // Fixed: Create a File object from Blob correctly
       const compressedFile = new File([compressedImage], file.name, { 
         type: 'image/jpeg',
         lastModified: new Date().getTime()
