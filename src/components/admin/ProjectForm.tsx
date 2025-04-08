@@ -131,8 +131,8 @@ export const ProjectForm = ({
                 reject(new Error('Canvas to Blob conversion failed'));
               }
             },
-            'image/jpeg',
-            quality // Higher quality for Supabase storage
+            file.type, // Use the original file type instead of hardcoding 'image/jpeg'
+            quality
           );
         };
         img.onerror = () => reject(new Error('Image loading error'));
@@ -150,6 +150,9 @@ export const ProjectForm = ({
 
     try {
       console.log("Starting upload process...");
+      console.log("File type:", file.type);
+      console.log("File size:", file.size);
+      
       // Check if the file is an image
       if (!file.type.startsWith('image/')) {
         throw new Error('Only image files are allowed');
@@ -166,6 +169,8 @@ export const ProjectForm = ({
 
       console.log("Compressing image...");
       const compressedImage = await compressImage(file);
+      console.log("Compressed image type:", compressedImage.type);
+      console.log("Compressed image size:", compressedImage.size);
       
       // Generate a unique filename with timestamp and original extension
       const fileExt = file.name.split('.').pop();

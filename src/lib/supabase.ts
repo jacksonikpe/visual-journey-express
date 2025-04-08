@@ -114,11 +114,16 @@ export const uploadImage = async (file: Blob, fileName: string): Promise<string 
     
     // Upload with additional debugging
     console.log('Upload starting with file size:', file.size);
+    console.log('File type:', file.type);
+    
+    // Important fix: Do not set Content-Type header for file upload
+    // Let the browser set the correct multipart/form-data content type
     const { data, error } = await supabase.storage
       .from('project-images')
       .upload(fileName, file, {
         cacheControl: '3600',
-        upsert: true // Allow overwriting files
+        upsert: true, // Allow overwriting files
+        contentType: file.type // Explicitly set the correct content type from the file
       });
 
     if (error) {
@@ -153,4 +158,3 @@ export const uploadImage = async (file: Blob, fileName: string): Promise<string 
   }
 };
 
-// Removed the duplicate export at the end of the file
