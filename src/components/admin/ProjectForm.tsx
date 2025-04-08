@@ -1,11 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -50,7 +45,7 @@ export const ProjectForm = ({
 
   // Initialize storage when component mounts
   useEffect(() => {
-    initializeStorage().catch(err => {
+    initializeStorage().catch((err) => {
       console.error("Failed to initialize storage:", err);
       toast({
         title: "Storage Error",
@@ -80,7 +75,7 @@ export const ProjectForm = ({
     defaultValues,
   });
 
-  const compressImage = async (file: File, maxWidth = 1920, quality = 0.9): Promise<Blob> => {
+  const compressImage = async (file: File, quality = 0.85): Promise<Blob> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -88,41 +83,43 @@ export const ProjectForm = ({
         const img = new window.Image();
         img.src = event.target?.result as string;
         img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const scale = maxWidth / img.width;
-          const newWidth = Math.min(maxWidth, img.width);
-          const newHeight = scale * img.height;
-          
-          canvas.width = newWidth;
-          canvas.height = newHeight;
-          
-          const ctx = canvas.getContext('2d');
+          const canvas = document.createElement("canvas");
+          // Maintain original dimensions
+          const width = img.width;
+          const height = img.height;
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext("2d");
           if (!ctx) {
-            reject(new Error('Could not get canvas context'));
+            reject(new Error("Could not get canvas context"));
             return;
           }
-          
-          ctx.drawImage(img, 0, 0, newWidth, newHeight);
-          
+
+          ctx.drawImage(img, 0, 0, width, height);
+
           canvas.toBlob(
             (blob) => {
               if (blob) {
                 resolve(blob);
               } else {
-                reject(new Error('Canvas to Blob conversion failed'));
+                reject(new Error("Canvas to Blob conversion failed"));
               }
             },
-            'image/jpeg',
-            quality // Higher quality for Supabase storage
+            "image/jpeg",
+            quality // Compression quality (0.85 provides good balance between quality and file size)
           );
         };
-        img.onerror = () => reject(new Error('Image loading error'));
+        img.onerror = () => reject(new Error("Image loading error"));
       };
       reader.onerror = (error) => reject(error);
     });
   };
 
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
@@ -132,50 +129,50 @@ export const ProjectForm = ({
     try {
       console.log("Starting upload process...");
       // Check if the file is an image
-      if (!file.type.startsWith('image/')) {
-        throw new Error('Only image files are allowed');
+      if (!file.type.startsWith("image/")) {
+        throw new Error("Only image files are allowed");
       }
 
       const compressedImage = await compressImage(file);
-      
+
       // Generate a unique filename with timestamp and original extension
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random()
+        .toString(36)
+        .substring(2, 15)}.${fileExt}`;
       const filePath = `${fileName}`;
-      
+
       console.log("Uploading to Supabase Storage...");
       console.log("Bucket: project-images, File path:", filePath);
 
       // Upload to Supabase Storage
-      const { data, error } = await supabase
-        .storage
-        .from('project-images')
+      const { data, error } = await supabase.storage
+        .from("project-images")
         .upload(filePath, compressedImage, {
           contentType: file.type,
-          cacheControl: '3600',
-          upsert: false
+          cacheControl: "3600",
+          upsert: false,
         });
-        
+
       if (error) {
         console.error("Upload error:", error);
         throw error;
       }
-      
+
       console.log("Upload successful, getting public URL");
-      
+
       // Get the public URL
-      const { data: publicUrlData } = supabase
-        .storage
-        .from('project-images')
+      const { data: publicUrlData } = supabase.storage
+        .from("project-images")
         .getPublicUrl(filePath);
-        
+
       if (!publicUrlData?.publicUrl) {
         throw new Error("Failed to get public URL");
       }
-      
+
       console.log("Public URL obtained:", publicUrlData.publicUrl);
       setImage(publicUrlData.publicUrl);
-      
+
       toast({
         title: "Success",
         description: "Image uploaded successfully",
@@ -184,7 +181,10 @@ export const ProjectForm = ({
       console.error("Error uploading image:", error);
       toast({
         title: "Upload Error",
-        description: error instanceof Error ? error.message : "Failed to upload image. Please try again.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to upload image. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -202,49 +202,68 @@ export const ProjectForm = ({
       return;
     }
 
-    const projectData = {
-      id: project?.id || undefined,
-      title: values.title,
-      category: values.category, 
-      description: values.description,
-      span: values.span,
-      image,
-      details: {
-        location: values["details.location"],
-        year: values["details.year"],
-      },
-    };
-
-    delete (projectData as any)["details.location"];
-    delete (projectData as any)["details.year"];
-
     try {
+      // Convert form values to the structure expected by the database
+      const projectData = {
+        title: values.title,
+        category: values.category,
+        description: values.description,
+        span: values.span,
+        image: image, // Use the image URL from state
+        details: {
+          location: values["details.location"],
+          year: values["details.year"],
+        },
+      };
+
+      // For logging/debugging
+      console.log("Project data to save:", projectData);
+
       if (project?.id) {
-        console.log("Updating project with data:", projectData);
-        
-        const { error } = await supabase
-          .from('projects')
+        // Update existing project
+        const { data, error } = await supabase
+          .from("projects")
           .update(projectData)
-          .eq('id', project.id);
-          
-        if (error) throw error;
+          .eq("id", project.id)
+          .select();
+
+        if (error) {
+          console.error("Supabase update error:", error);
+          throw error;
+        }
+
+        console.log("Updated project:", data);
+        onSave(data?.[0] || projectData);
       } else {
-        console.log("Inserting new project with data:", projectData);
-        
-        const { error } = await supabase
-          .from('projects')
-          .insert(projectData);
-          
-        if (error) throw error;
+        // Insert new project
+        const { data, error } = await supabase
+          .from("projects")
+          .insert(projectData)
+          .select();
+
+        if (error) {
+          console.error("Supabase insert error:", error);
+          throw error;
+        }
+
+        console.log("Inserted project:", data);
+        onSave(data?.[0] || projectData);
       }
-      
-      onSave(projectData);
-      
-    } catch (error) {
-      console.error("Supabase error:", error);
+
       toast({
-        title: "Error",
-        description: "Failed to save project to database",
+        title: "Success",
+        description: project?.id
+          ? "Project updated successfully"
+          : "Project created successfully",
+      });
+    } catch (error) {
+      console.error("Save error:", error);
+      toast({
+        title: "Database Error",
+        description:
+          error instanceof Error
+            ? `Failed to save: ${error.message}`
+            : "Failed to save project to database",
         variant: "destructive",
       });
     }
@@ -275,7 +294,10 @@ export const ProjectForm = ({
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <LucideImage className="text-muted-foreground" size={32} />
+                      <LucideImage
+                        className="text-muted-foreground"
+                        size={32}
+                      />
                     )}
                     <input
                       ref={fileInputRef}

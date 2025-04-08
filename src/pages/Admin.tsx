@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
@@ -14,8 +13,10 @@ import { Plus } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 const Admin = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [adminProjects, setAdminProjects] = useState<any[]>([]);
   const [isAddingNew, setIsAddingNew] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [editingProject, setEditingProject] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const Admin = () => {
     // but for simplicity we'll just see if they came from the access code page
     const referrer = document.referrer;
     const isFromAccessCode = referrer.includes("/access-code");
-    
+
     if (!isFromAccessCode && !localStorage.getItem("admin_authorized")) {
       toast({
         title: "Unauthorized Access",
@@ -45,12 +46,12 @@ const Admin = () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .from("projects")
+        .select("*")
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
-      
+
       setAdminProjects(data || []);
     } catch (error) {
       console.error("Error fetching projects:", error);
@@ -73,6 +74,7 @@ const Admin = () => {
     setIsAddingNew(true);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleEdit = (project: any) => {
     setIsAddingNew(false);
     setEditingProject(project);
@@ -83,14 +85,17 @@ const Admin = () => {
     setEditingProject(null);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSave = (project: any) => {
     fetchProjects(); // Refresh the list from the database
     setIsAddingNew(false);
     setEditingProject(null);
-    
+
     toast({
       title: "Success",
-      description: project.id ? "Project updated successfully" : "New project added successfully",
+      description: project.id
+        ? "Project updated successfully"
+        : "New project added successfully",
     });
   };
 
@@ -117,16 +122,19 @@ const Admin = () => {
               <TabsTrigger value="content">Website Content</TabsTrigger>
               <TabsTrigger value="portfolio">Portfolio Projects</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="content">
               <ContentEditor />
             </TabsContent>
-            
+
             <TabsContent value="portfolio">
               <div className="flex justify-between items-center mb-8">
                 <h2 className="text-2xl font-bold">Portfolio Management</h2>
                 {!isAddingNew && !editingProject && (
-                  <Button onClick={handleAddNew} className="flex items-center gap-2">
+                  <Button
+                    onClick={handleAddNew}
+                    className="flex items-center gap-2"
+                  >
                     <Plus size={16} />
                     Add New Project
                   </Button>
@@ -138,7 +146,7 @@ const Admin = () => {
                   <div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
                   <p className="text-muted-foreground">Loading projects...</p>
                 </div>
-              ) : (isAddingNew || editingProject) ? (
+              ) : isAddingNew || editingProject ? (
                 <ProjectForm
                   project={editingProject}
                   onSave={handleSave}
