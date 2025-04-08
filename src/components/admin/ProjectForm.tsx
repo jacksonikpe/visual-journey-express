@@ -39,25 +39,28 @@ export const ProjectForm = ({
   onSave,
   onCancel,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  project: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onSave: (project: any) => void;
+  project?: Record<string, any>;
+  onSave: (project: Record<string, any>) => void;
   onCancel: () => void;
 }) => {
   const [image, setImage] = useState<string>(project?.image || "");
   const [uploading, setUploading] = useState(false);
+  const [storageInitialized, setStorageInitialized] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize storage when component mounts
   useEffect(() => {
     const init = async () => {
       try {
+        console.log("Initializing storage...");
         const initialized = await initializeStorage();
+        setStorageInitialized(initialized);
+        
         if (!initialized) {
+          console.error("Failed to initialize storage");
           toast({
             title: "Storage Error",
-            description: "Failed to initialize storage. Please try again.",
+            description: "Failed to initialize storage. Please contact support.",
             variant: "destructive",
           });
         } else {
@@ -152,11 +155,23 @@ export const ProjectForm = ({
         throw new Error('Only image files are allowed');
       }
 
+      if (!storageInitialized) {
+        console.log("Re-initializing storage before upload...");
+        const initialized = await initializeStorage();
+        if (!initialized) {
+          throw new Error("Storage initialization failed");
+        }
+        setStorageInitialized(true);
+      }
+
+      console.log("Compressing image...");
       const compressedImage = await compressImage(file);
       
       // Generate a unique filename with timestamp and original extension
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+      
+      console.log(`Uploading compressed image: ${fileName}, size: ${compressedImage.size} bytes`);
       
       // Use our helper function to upload the image
       const publicUrl = await uploadImage(compressedImage, fileName);
@@ -201,6 +216,7 @@ export const ProjectForm = ({
 
     // Create clean project data object with optional id
     interface ProjectData {
+      id?: string;
       title: string;
       category: string; 
       description: string;
@@ -210,7 +226,6 @@ export const ProjectForm = ({
         location: string;
         year: string;
       };
-      id?: string;
     }
 
     const projectData: ProjectData = {
