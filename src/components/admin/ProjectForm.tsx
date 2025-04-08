@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import {
@@ -51,15 +52,24 @@ export const ProjectForm = ({
   // Initialize storage when component mounts
   useEffect(() => {
     const init = async () => {
-      const initialized = await initializeStorage();
-      if (!initialized) {
+      try {
+        const initialized = await initializeStorage();
+        if (!initialized) {
+          toast({
+            title: "Storage Error",
+            description: "Failed to initialize storage. Please try again.",
+            variant: "destructive",
+          });
+        } else {
+          console.log("Storage initialized successfully");
+        }
+      } catch (error) {
+        console.error("Error initializing storage:", error);
         toast({
           title: "Storage Error",
           description: "Failed to initialize storage. Please try again.",
           variant: "destructive",
         });
-      } else {
-        console.log("Storage initialized successfully");
       }
     };
     
@@ -189,8 +199,21 @@ export const ProjectForm = ({
       year: values["details.year"] || "",
     };
 
-    // Create clean project data object
-    const projectData = {
+    // Create clean project data object with optional id
+    interface ProjectData {
+      title: string;
+      category: string; 
+      description: string;
+      span: string;
+      image: string;
+      details: {
+        location: string;
+        year: string;
+      };
+      id?: string;
+    }
+
+    const projectData: ProjectData = {
       title: values.title,
       category: values.category, 
       description: values.description,
