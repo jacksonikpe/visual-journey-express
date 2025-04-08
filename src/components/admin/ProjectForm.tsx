@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import {
@@ -22,16 +21,16 @@ import { Image as LucideImage, Upload, Save, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { supabase, initializeStorage, uploadImage } from "@/lib/supabase";
+import { supabase, initializeStorage } from "@/lib/supabase";
 
 // Form validation schema
 const formSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
+  title: z.string(),
   category: z.string().min(1, { message: "Category is required" }),
   description: z.string(),
   span: z.string().default("col-span-1 row-span-1"),
-  "details.location": z.string().optional(),
-  "details.year": z.string().optional(),
+  "details.location": z.string(),
+  "details.year": z.string(),
 });
 
 export const ProjectForm = ({
@@ -39,51 +38,33 @@ export const ProjectForm = ({
   onSave,
   onCancel,
 }: {
-  project?: Record<string, any>;
-  onSave: (project: Record<string, any>) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  project: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onSave: (project: any) => void;
   onCancel: () => void;
 }) => {
   const [image, setImage] = useState<string>(project?.image || "");
   const [uploading, setUploading] = useState(false);
-  const [storageInitialized, setStorageInitialized] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize storage when component mounts
   useEffect(() => {
-    const init = async () => {
-      try {
-        console.log("Initializing storage...");
-        const initialized = await initializeStorage();
-        setStorageInitialized(initialized);
-        
-        if (!initialized) {
-          console.error("Failed to initialize storage");
-          toast({
-            title: "Storage Error",
-            description: "Failed to initialize storage. Please contact support.",
-            variant: "destructive",
-          });
-        } else {
-          console.log("Storage initialized successfully");
-        }
-      } catch (error) {
-        console.error("Error initializing storage:", error);
-        toast({
-          title: "Storage Error",
-          description: "Failed to initialize storage. Please try again.",
-          variant: "destructive",
-        });
-      }
-    };
-    
-    init();
+    initializeStorage().catch(err => {
+      console.error("Failed to initialize storage:", err);
+      toast({
+        title: "Storage Error",
+        description: "Failed to initialize storage. Please try again.",
+        variant: "destructive",
+      });
+    });
   }, []);
 
   const defaultValues = project
     ? {
         ...project,
-        "details.location": project.details?.location || "",
-        "details.year": project.details?.year || "",
+        "details.location": project.details.location,
+        "details.year": project.details.year,
       }
     : {
         title: "",
@@ -131,8 +112,8 @@ export const ProjectForm = ({
                 reject(new Error('Canvas to Blob conversion failed'));
               }
             },
-            file.type, // Use the original file type instead of hardcoding 'image/jpeg'
-            quality
+            'image/jpeg',
+            quality // Higher quality for Supabase storage
           );
         };
         img.onerror = () => reject(new Error('Image loading error'));
@@ -150,42 +131,50 @@ export const ProjectForm = ({
 
     try {
       console.log("Starting upload process...");
-      console.log("File type:", file.type);
-      console.log("File size:", file.size);
-      
       // Check if the file is an image
       if (!file.type.startsWith('image/')) {
         throw new Error('Only image files are allowed');
       }
 
-      if (!storageInitialized) {
-        console.log("Re-initializing storage before upload...");
-        const initialized = await initializeStorage();
-        if (!initialized) {
-          throw new Error("Storage initialization failed");
-        }
-        setStorageInitialized(true);
-      }
-
-      console.log("Compressing image...");
       const compressedImage = await compressImage(file);
-      console.log("Compressed image type:", compressedImage.type);
-      console.log("Compressed image size:", compressedImage.size);
       
       // Generate a unique filename with timestamp and original extension
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+      const filePath = `${fileName}`;
       
-      console.log(`Uploading compressed image: ${fileName}, size: ${compressedImage.size} bytes`);
-      
-      // Use our helper function to upload the image
-      const publicUrl = await uploadImage(compressedImage, fileName);
-      
-      if (!publicUrl) {
-        throw new Error("Failed to upload image");
+      console.log("Uploading to Supabase Storage...");
+      console.log("Bucket: project-images, File path:", filePath);
+
+      // Upload to Supabase Storage
+      const { data, error } = await supabase
+        .storage
+        .from('project-images')
+        .upload(filePath, compressedImage, {
+          contentType: file.type,
+          cacheControl: '3600',
+          upsert: false
+        });
+        
+      if (error) {
+        console.error("Upload error:", error);
+        throw error;
       }
       
-      setImage(publicUrl);
+      console.log("Upload successful, getting public URL");
+      
+      // Get the public URL
+      const { data: publicUrlData } = supabase
+        .storage
+        .from('project-images')
+        .getPublicUrl(filePath);
+        
+      if (!publicUrlData?.publicUrl) {
+        throw new Error("Failed to get public URL");
+      }
+      
+      console.log("Public URL obtained:", publicUrlData.publicUrl);
+      setImage(publicUrlData.publicUrl);
       
       toast({
         title: "Success",
@@ -213,72 +202,40 @@ export const ProjectForm = ({
       return;
     }
 
-    // Extract and prepare the details correctly
-    const details = {
-      location: values["details.location"] || "",
-      year: values["details.year"] || "",
-    };
-
-    // Create clean project data object with optional id
-    interface ProjectData {
-      id?: string;
-      title: string;
-      category: string; 
-      description: string;
-      span: string;
-      image: string;
-      details: {
-        location: string;
-        year: string;
-      };
-    }
-
-    const projectData: ProjectData = {
+    const projectData = {
+      id: project?.id || undefined,
       title: values.title,
       category: values.category, 
       description: values.description,
       span: values.span,
       image,
-      details,
+      details: {
+        location: values["details.location"],
+        year: values["details.year"],
+      },
     };
 
-    // If editing, include the ID
-    if (project?.id) {
-      projectData.id = project.id;
-    }
-
-    console.log("Saving project with data:", JSON.stringify(projectData, null, 2));
+    delete (projectData as any)["details.location"];
+    delete (projectData as any)["details.year"];
 
     try {
       if (project?.id) {
-        console.log(`Updating project with ID: ${project.id}`);
+        console.log("Updating project with data:", projectData);
         
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from('projects')
           .update(projectData)
-          .eq('id', project.id)
-          .select();
+          .eq('id', project.id);
           
-        if (error) {
-          console.error("Update error:", error);
-          throw error;
-        }
-        
-        console.log("Update successful:", data);
+        if (error) throw error;
       } else {
-        console.log("Inserting new project");
+        console.log("Inserting new project with data:", projectData);
         
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from('projects')
-          .insert(projectData)
-          .select();
+          .insert(projectData);
           
-        if (error) {
-          console.error("Insert error:", error);
-          throw error;
-        }
-        
-        console.log("Insert successful:", data);
+        if (error) throw error;
       }
       
       onSave(projectData);
@@ -287,7 +244,7 @@ export const ProjectForm = ({
       console.error("Supabase error:", error);
       toast({
         title: "Error",
-        description: "Failed to save project to database. Please check the console for details.",
+        description: "Failed to save project to database",
         variant: "destructive",
       });
     }
@@ -350,7 +307,6 @@ export const ProjectForm = ({
                       <FormControl>
                         <Input placeholder="Project title" {...field} />
                       </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
