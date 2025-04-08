@@ -220,6 +220,8 @@ export const ProjectForm = ({
 
     try {
       if (project?.id) {
+        console.log("Updating project with data:", projectData);
+        
         const { error } = await supabase
           .from('projects')
           .update(projectData)
@@ -227,6 +229,8 @@ export const ProjectForm = ({
           
         if (error) throw error;
       } else {
+        console.log("Inserting new project with data:", projectData);
+        
         const { error } = await supabase
           .from('projects')
           .insert(projectData);

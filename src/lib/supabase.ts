@@ -20,7 +20,7 @@ export const checkSupabaseConnection = async () => {
   }
 };
 
-// Check if the bucket exists
+// Check if storage bucket exists
 export const checkBucketExists = async (bucketName: string) => {
   try {
     const { data, error } = await supabase.storage.getBucket(bucketName);
@@ -35,13 +35,26 @@ export const checkBucketExists = async (bucketName: string) => {
   }
 };
 
-// Create and initialize bucket if it doesn't exist
+// Initialize storage - create the bucket if it doesn't exist
 export const initializeStorage = async () => {
   try {
     const bucketExists = await checkBucketExists('project-images');
     
     if (!bucketExists) {
-      console.log('Storage bucket does not exist. Will assume it has been created via SQL migration.');
+      console.log('Creating storage bucket for project images...');
+      const { error: createError } = await supabase.storage.createBucket('project-images', {
+        public: true,
+        fileSizeLimit: 5242880, // 5MB limit
+      });
+      
+      if (createError) {
+        console.error('Error creating bucket:', createError);
+        return false;
+      }
+      
+      console.log('Storage bucket created successfully');
+    } else {
+      console.log('Storage bucket already exists');
     }
     
     return true;
