@@ -153,4 +153,4 @@ export const uploadImage = async (file: Blob, fileName: string): Promise<string 
   }
 };
 
-export { supabase };
+// Removed the duplicate export at the end of the file
