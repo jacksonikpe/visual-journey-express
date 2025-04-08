@@ -11,14 +11,34 @@ import { ContentEditor } from "../components/admin/ContentEditor";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { supabase, checkSupabaseConnection } from "@/lib/supabase";
 
 const Admin = () => {
   const [adminProjects, setAdminProjects] = useState<any[]>([]);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [editingProject, setEditingProject] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isConnected, setIsConnected] = useState(false);
   const navigate = useNavigate();
+
+  // Check Supabase connection
+  useEffect(() => {
+    const checkConnection = async () => {
+      const connected = await checkSupabaseConnection();
+      setIsConnected(connected);
+      if (!connected) {
+        toast({
+          title: "Connection Error",
+          description: "Could not connect to the database. Some features may not work.",
+          variant: "destructive",
+        });
+      } else {
+        console.log("Connected to Supabase successfully");
+      }
+    };
+    
+    checkConnection();
+  }, []);
 
   // Simple verification check to ensure users don't access this page directly
   useEffect(() => {
@@ -44,13 +64,18 @@ const Admin = () => {
   const fetchProjects = async () => {
     setIsLoading(true);
     try {
+      console.log("Fetching projects from Supabase...");
       const { data, error } = await supabase
         .from('projects')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching projects:", error);
+        throw error;
+      }
       
+      console.log("Fetched projects:", data);
       setAdminProjects(data || []);
     } catch (error) {
       console.error("Error fetching projects:", error);
@@ -65,8 +90,10 @@ const Admin = () => {
   };
 
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    if (isConnected) {
+      fetchProjects();
+    }
+  }, [isConnected]);
 
   const handleAddNew = () => {
     setEditingProject(null);
@@ -133,7 +160,12 @@ const Admin = () => {
                 )}
               </div>
 
-              {isLoading ? (
+              {!isConnected ? (
+                <div className="text-center py-10">
+                  <p className="text-destructive font-medium">Database connection error</p>
+                  <p className="text-muted-foreground mt-2">Could not connect to the database. Please try refreshing the page.</p>
+                </div>
+              ) : isLoading ? (
                 <div className="text-center py-10">
                   <div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
                   <p className="text-muted-foreground">Loading projects...</p>

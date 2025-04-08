@@ -21,16 +21,16 @@ import { Image as LucideImage, Upload, Save, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { supabase, initializeStorage } from "@/lib/supabase";
+import { supabase, initializeStorage, uploadImage } from "@/lib/supabase";
 
 // Form validation schema
 const formSchema = z.object({
-  title: z.string(),
+  title: z.string().min(1, { message: "Title is required" }),
   category: z.string().min(1, { message: "Category is required" }),
   description: z.string(),
   span: z.string().default("col-span-1 row-span-1"),
-  "details.location": z.string(),
-  "details.year": z.string(),
+  "details.location": z.string().optional(),
+  "details.year": z.string().optional(),
 });
 
 export const ProjectForm = ({
@@ -50,21 +50,27 @@ export const ProjectForm = ({
 
   // Initialize storage when component mounts
   useEffect(() => {
-    initializeStorage().catch(err => {
-      console.error("Failed to initialize storage:", err);
-      toast({
-        title: "Storage Error",
-        description: "Failed to initialize storage. Please try again.",
-        variant: "destructive",
-      });
-    });
+    const init = async () => {
+      const initialized = await initializeStorage();
+      if (!initialized) {
+        toast({
+          title: "Storage Error",
+          description: "Failed to initialize storage. Please try again.",
+          variant: "destructive",
+        });
+      } else {
+        console.log("Storage initialized successfully");
+      }
+    };
+    
+    init();
   }, []);
 
   const defaultValues = project
     ? {
         ...project,
-        "details.location": project.details.location,
-        "details.year": project.details.year,
+        "details.location": project.details?.location || "",
+        "details.year": project.details?.year || "",
       }
     : {
         title: "",
@@ -141,40 +147,15 @@ export const ProjectForm = ({
       // Generate a unique filename with timestamp and original extension
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-      const filePath = `${fileName}`;
       
-      console.log("Uploading to Supabase Storage...");
-      console.log("Bucket: project-images, File path:", filePath);
-
-      // Upload to Supabase Storage
-      const { data, error } = await supabase
-        .storage
-        .from('project-images')
-        .upload(filePath, compressedImage, {
-          contentType: file.type,
-          cacheControl: '3600',
-          upsert: false
-        });
-        
-      if (error) {
-        console.error("Upload error:", error);
-        throw error;
+      // Use our helper function to upload the image
+      const publicUrl = await uploadImage(compressedImage, fileName);
+      
+      if (!publicUrl) {
+        throw new Error("Failed to upload image");
       }
       
-      console.log("Upload successful, getting public URL");
-      
-      // Get the public URL
-      const { data: publicUrlData } = supabase
-        .storage
-        .from('project-images')
-        .getPublicUrl(filePath);
-        
-      if (!publicUrlData?.publicUrl) {
-        throw new Error("Failed to get public URL");
-      }
-      
-      console.log("Public URL obtained:", publicUrlData.publicUrl);
-      setImage(publicUrlData.publicUrl);
+      setImage(publicUrl);
       
       toast({
         title: "Success",
@@ -202,40 +183,59 @@ export const ProjectForm = ({
       return;
     }
 
+    // Extract and prepare the details correctly
+    const details = {
+      location: values["details.location"] || "",
+      year: values["details.year"] || "",
+    };
+
+    // Create clean project data object
     const projectData = {
-      id: project?.id || undefined,
       title: values.title,
       category: values.category, 
       description: values.description,
       span: values.span,
       image,
-      details: {
-        location: values["details.location"],
-        year: values["details.year"],
-      },
+      details,
     };
 
-    delete (projectData as any)["details.location"];
-    delete (projectData as any)["details.year"];
+    // If editing, include the ID
+    if (project?.id) {
+      projectData.id = project.id;
+    }
+
+    console.log("Saving project with data:", JSON.stringify(projectData, null, 2));
 
     try {
       if (project?.id) {
-        console.log("Updating project with data:", projectData);
+        console.log(`Updating project with ID: ${project.id}`);
         
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('projects')
           .update(projectData)
-          .eq('id', project.id);
+          .eq('id', project.id)
+          .select();
           
-        if (error) throw error;
-      } else {
-        console.log("Inserting new project with data:", projectData);
+        if (error) {
+          console.error("Update error:", error);
+          throw error;
+        }
         
-        const { error } = await supabase
+        console.log("Update successful:", data);
+      } else {
+        console.log("Inserting new project");
+        
+        const { data, error } = await supabase
           .from('projects')
-          .insert(projectData);
+          .insert(projectData)
+          .select();
           
-        if (error) throw error;
+        if (error) {
+          console.error("Insert error:", error);
+          throw error;
+        }
+        
+        console.log("Insert successful:", data);
       }
       
       onSave(projectData);
@@ -244,7 +244,7 @@ export const ProjectForm = ({
       console.error("Supabase error:", error);
       toast({
         title: "Error",
-        description: "Failed to save project to database",
+        description: "Failed to save project to database. Please check the console for details.",
         variant: "destructive",
       });
     }
@@ -307,6 +307,7 @@ export const ProjectForm = ({
                       <FormControl>
                         <Input placeholder="Project title" {...field} />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
